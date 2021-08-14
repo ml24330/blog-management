@@ -1,0 +1,31 @@
+.navbar {
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 99;
+    border-bottom: 1px solid lightgray;
+}
+
+.navbar-nav {
+    margin: auto;
+}
+
+.nav-link {
+    color: black !important;
+    font-size: 1.1rem;
+    margin: 0 3px;
+    padding-bottom: 0;
+}
+
+.row {
+    justify-content: center;
+}
+
+.dropdown-toggle::after {
+    content: none;
+}
+
+.dropdown-item.active, 
+.dropdown-item:active {
+    background-color: var(--theme)
+}

@@ -1,0 +1,424 @@
+body {
+    font-family: serif;
+    --theme: hsla(280, 50%, 50%, 1);
+    overflow-wrap: break-word;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--theme);
+}
+
+/*
+    Navigation & Header styles
+*/
+
+.header-title {
+    display: block;
+    text-align: center;
+    font-weight: bold;
+    font-size: 2.2rem;
+    margin: 5px 0;
+    height: 50px;
+    overflow: visible;
+}
+
+.header-title img {
+    height: 50px;
+    margin: 0 20px;
+}
+
+.header-banner {
+    width: 100vw;
+    height: 200px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    text-align: center;
+    background-color: rgb(10,10,10);
+}
+
+.header-banner img {
+    height: 200px;
+}
+
+.nav-search {
+    transform: translateY(-3px);
+}
+
+.nav-search img {
+    width: 22px;
+    cursor: pointer;
+    transform: translateX(-30px) translateY(-2px);
+}
+
+@media (max-width: 840px) {
+    .header-banner img {
+        height: 150px;
+    }
+
+    .header-banner {
+        height: 150px;
+    }
+}
+
+@media (max-width: 600px) {
+    .header-banner img {
+        height: 95px;
+    }
+
+    .header-banner {
+        height: 95px;
+    }
+
+    .header-title {
+        font-size: 1.7rem;
+    }
+
+    .header-title img {
+        height: 40px;
+        margin: 0 10px;
+    }
+}
+
+
+/* 
+    Footer styles
+*/
+
+.footer input[type="submit"] {
+    margin-top: 5px;
+    font-size: 1.5rem;
+    text-align: center;
+    background-color: var(--theme);
+    border: none;
+    color: white;
+    border-radius: 0.2rem;
+}
+
+.footer-links {
+    margin-bottom: 15px;
+}
+
+.footer-links img {
+    width: 40px;
+    margin: 0 5px;
+}
+
+.footer-title {
+    display: block;
+    font-weight: bold;
+    font-size: 1.8rem;
+    margin: 5px 0;
+    overflow: visible;
+}
+
+.footer-text {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.copyright {
+    height: 40px;
+    background-color: rgba(0, 0, 0, 0.2);
+    font-size: 1.3rem;
+}
+
+@media (max-width: 840px) {
+    .copyright {
+        font-size: 1rem;
+    }
+}
+
+
+/*
+    Homepage styles
+*/
+
+.home-container > div {
+    width: 380px;
+    padding: 0 10px;
+    margin: 0 0 20px 0;
+}
+
+.home-container > div:not(:first-child) {
+    border-left: 1px solid gray;
+}
+
+.home-container .section-title {
+    font-size: 1.5rem;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.fb-container {
+    width: 360px;
+    margin: 0 auto 20px auto;
+}
+
+@media (max-width: 1140px) {
+    .home-container > div {
+        width: 300px;
+        padding: 0 10px;
+    }
+    
+    .fb-container {
+        width: 290px;
+    }
+}
+
+@media (max-width: 960px) {
+
+    .home-container > div {
+        width: 90%;
+    }
+
+    .fb-container {
+        width: 90%;
+    }
+
+    .home-container > div:not(:first-child) {
+        border-left: none;
+    }
+}
+
+/*
+    Post component styles
+*/
+
+.post-component {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    padding: 10px 5px;
+    border-bottom: 1px solid lightgray;
+    max-width: 1000px;
+    margin: auto;
+}
+
+.post-component img {
+    height: 15px;
+    margin: 0 5px;
+}
+
+.post-component > span {
+    color: gray;
+}
+
+.post-component .post-title {
+    font-size: 1.3rem;
+    line-height: 1.2;
+}
+
+.post-component .post-excerpt {
+    font-size: 0.9rem;
+}
+
+.post-component:last-child {
+    border-bottom: none;
+}
+
+/*
+    Paginator styles
+*/
+
+.pagination {
+    text-align: center;
+    justify-content: center;
+    text-transform: capitalize;
+    margin-top: 10px;
+    font-size: 1.2rem;
+}
+
+.pagination li {
+    margin: 0 2px;
+}
+
+.pagination .active {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.pagination *:hover {
+    color: var(--theme);
+}
+
+/*
+    Page styles
+*/
+
+.page-container,
+.post-container {
+    width: min(80%, 1000px);
+    margin: 20px auto;
+    font-size: 1.2rem;
+}
+
+.page-container .img-large {
+    display: block;
+    max-width: 80%;
+    max-height: 400px;
+    margin: 25px auto;
+}
+
+.page-container .img-small {
+    display: block;
+    max-width: 50%;
+    max-height: 250px;
+    margin: 20px 0;
+}
+
+.page-heading {
+    text-align: center;
+    font-size: 2.1rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.page-heading-small {
+    font-size: 1.6rem;
+    font-weight: bold;
+    margin: 30px 0 10px 0;
+}
+
+.page-subheading {
+    text-align: center;
+    font-size: 1.3rem;
+    margin-bottom: 5px;
+}
+
+.page-subheading:first-letter {
+    text-transform: uppercase;
+}
+
+.page-subheading img {
+    width: 25px;
+    margin-right: 5px;
+}
+
+.page-content {
+    margin: 20px 0;
+}
+
+/*
+    Post styles
+*/
+
+.post-container {
+    text-align: center;
+}
+
+.post-container .post-title {
+    font-size: 2rem;
+    font-weight: bold;
+    line-height: 1.1;
+}
+
+.post-container .post-meta {
+    color: gray;
+}
+
+.post-container .post-meta span {
+    padding: 0 8px 0 0;
+}
+
+.post-container .post-meta span:not(:first-child) {
+    padding: 0 8px;
+    border-left: 1px solid black;
+}
+
+.post-container .post-meta img {
+    height: 18px;
+    margin-right: 4px;
+}
+
+.post-container .page-content {
+    margin: 50px 0;
+    text-align: left;
+}
+
+.inline-reference {
+    vertical-align: super;
+    font-size: .83em;
+}
+
+.post-container h3 {
+    font-size: 1.8rem;
+    margin: 30px 0 16px 0;
+}
+
+.post-container h4 {
+    font-size: 1.65rem;
+    margin: 27px 0 14px 0;
+}
+
+.post-container h5 {
+    font-size: 1.5rem;
+    margin: 20px 0 10px 0;
+}
+
+.post-container h6 {
+    font-size: 1.35rem;
+    margin: 15px 0 8px 0;
+}
+
+/*
+    Author styles
+*/
+
+.avatar {
+    display: block;
+    margin: 0 auto 10px auto;
+    width: 125px;
+    border-radius: 100%;
+}
+
+.author-category {
+    text-align: center;
+    margin-right: 10px;
+    color: rgba(0,0,0,0.8);
+    font-weight: normal;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+}
+
+.author-card {
+    width: 300px;
+    margin: 10px;
+    min-height: 220px;
+    padding: 10px 5px 0 5px;
+    font-size: 1.2rem;
+    border-color: var(--theme);
+}
+
+.author-img {
+    border-radius: 100%;
+    width: 30%;
+    margin: auto;
+}
+
+/*
+    Loading styles
+*/
+
+.loading {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 50px 0;
+}
+
+/*
+    Award styles
+*/
+
+.awardee {
+    font-weight: bold;
+}
+
+.award {
+    margin-left: 10px;
+    color:rgba(0, 0, 0, 0.7);
+}
