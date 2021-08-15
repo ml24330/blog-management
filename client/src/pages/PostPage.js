@@ -98,14 +98,12 @@ export default function PostPage({ match, history }) {
         }
     }, [match.params.id, modified])
 
-    useEffect(() => {
-        return () => {
+    const cleanUp = () => {
             localStorage.removeItem(`post_${match.params.id}`)
             localStorage.removeItem(`modified_${match.params.id}`)
             localStorage.removeItem(`n-a_${match.params.id}`)
             localStorage.removeItem(`n-c_${match.params.id}`)
         }
-    }, [])
 
     const exists = (v) => {
         return v !== undefined
@@ -222,6 +220,7 @@ export default function PostPage({ match, history }) {
         }
         if(post_res.status === 204) {
             setStatus(<>Post successfully deleted. Go back to all posts <Link className={classes.link} to={`/posts`}>here</Link>. </>)
+            cleanUp()
         } else {
             setStatus(`An error occurred! API returned with status ${post_res.status}.`)
         }
@@ -236,7 +235,7 @@ export default function PostPage({ match, history }) {
             <div className={classes.page} >
                 {!loggedIn && <Warning />}
                 <Link to="/posts">
-                    <Button variant="outlined" color="primary">
+                    <Button variant="outlined" color="primary" onClick={cleanUp}>
                         Back to all posts
                     </Button>
                 </Link>
