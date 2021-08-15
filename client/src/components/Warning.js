@@ -29,7 +29,7 @@ export default function Warning() {
     return (
         <div className={classes.div}>
             <Typography variant="h5">
-                WARNING: You are not logged in! Click <Link className={classes.link} to={`${API_URL}/login?dest=${window.location.href}`}>here</Link> to log in again.
+                WARNING: You are not logged in! Click <Link className={classes.link} to={`/login?dest=${window.location.href}`}>here</Link> to log in again.
             </Typography>
         </div>
     )
