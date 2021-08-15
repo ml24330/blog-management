@@ -119,7 +119,8 @@ export default function AuthorPage({ match, history }) {
             return
         }
         if(res.status === 200) {
-            setStatus(<>Author successfully edited. <span className={classes.link} onClick={() => window.location.reload()}>Refresh</span> the page to see.</>)
+            setModified(false)
+            setStatus(<>Author successfully edited. <span className={classes.link} onClick={() => {setModified(false);window.location.reload()}}>Refresh</span> the page to see.</>)
             
         } else {
             setStatus(`An error occurred! API returned with status ${res.status}.`)

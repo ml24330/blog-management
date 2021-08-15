@@ -202,7 +202,7 @@ export default function PostPage({ match, history }) {
             setStatus(`An error occurred! API returned with status ${visits_res.status}`)
             return
         }
-        setStatus(<>Post successfully saved. <span className={classes.link} onClick={() => window.location.reload()}>Refresh</span> the page to see.</>)
+        setStatus(<>Post successfully saved. <span className={classes.link} onClick={() => {setModified(false);window.location.reload()}}>Refresh</span> the page to see.</>)
     }
 
     const handleDelete = async () => {
