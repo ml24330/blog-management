@@ -100,7 +100,10 @@ export default function PostPage({ match, history }) {
 
     useEffect(() => {
         return () => {
-            localStorage.clear()
+            localStorage.removeItem(`post_${match.params.id}`)
+            localStorage.removeItem(`modified_${match.params.id}`)
+            localStorage.removeItem(`n-a_${match.params.id}`)
+            localStorage.removeItem(`n-c_${match.params.id}`)
         }
     }, [])
 
