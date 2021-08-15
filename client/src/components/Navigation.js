@@ -46,7 +46,7 @@ export default function Navigation({ name }) {
         <Typography variant="h6" className={classes.title}>
           {name}
         </Typography>
-        <Button color="inherit" onClick={() => {removeCookie('session-token');window.location.reload()}}>
+        <Button color="inherit" onClick={() => {removeCookie('session-token');localStorage.clear();window.location.reload()}}>
           Log out
         </Button>
       </Toolbar>

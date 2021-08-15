@@ -235,7 +235,7 @@ export default function PostPage({ match, history }) {
             <div className={classes.page} >
                 {!loggedIn && <Warning />}
                 <Link to="/posts">
-                    <Button variant="outlined" color="primary" onClick={cleanUp}>
+                    <Button variant="outlined" color="primary">
                         Back to all posts
                     </Button>
                 </Link>

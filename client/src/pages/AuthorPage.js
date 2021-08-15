@@ -154,7 +154,7 @@ export default function AuthorPage({ match, history }) {
             <div className={classes.page}>
                 {!loggedIn && <Warning />}
                 <Link to="/authors">
-                    <Button variant="outlined" color="primary" onClick={cleanUp}>
+                    <Button variant="outlined" color="primary">
                         Back to all authors
                     </Button>
                 </Link>
