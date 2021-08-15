@@ -57,10 +57,10 @@ const useStyles = makeStyles({
 
 export default function PostPage({ match, history }) {
 
-    const [post, setPost] = useLocalStorage('post', {})
-    const [modified, setModified] = useLocalStorage('modified', false)
-    const [newAuthor, setNewAuthor] = useLocalStorage('n-a', '')
-    const [newCategory, setNewCategory] = useLocalStorage('n-c', '')
+    const [post, setPost] = useLocalStorage(`post_${match.params.id}`, {})
+    const [modified, setModified] = useLocalStorage(`modified_${match.params.id}`, false)
+    const [newAuthor, setNewAuthor] = useLocalStorage(`n-a_${match.params.id}`, '')
+    const [newCategory, setNewCategory] = useLocalStorage(`n-c_${match.params.id}`, '')
     
     const [status, setStatus] = useState('')
     const [isOpen, setIsOpen] = useState(false)

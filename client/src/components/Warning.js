@@ -1,8 +1,6 @@
 import React, { useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import Typography from '@material-ui/core/Typography'
 import { makeStyles } from '@material-ui/core/styles'
-import { API_URL } from '../config'
 
 const useStyles = makeStyles({
     div: {

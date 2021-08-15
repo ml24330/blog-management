@@ -37,9 +37,9 @@ const useStyles = makeStyles({
 
 export default function AuthorPage({ match, history }) {
 
-    const [author, setAuthor] = useLocalStorage('author', {})
-    const [image, setImage] = useLocalStorage('image', '')
-    const [modified, setModified] = useLocalStorage('modified', false)
+    const [author, setAuthor] = useLocalStorage(`author_${match.params.id}`, {})
+    const [image, setImage] = useLocalStorage(`image_${match.params.id}`, '')
+    const [modified, setModified] = useLocalStorage(`modified_${match.params.id}`, false)
     const [status, setStatus] = useState('')
     const [loggedIn, setLoggedIn] = useState(true)
 
