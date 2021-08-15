@@ -75,11 +75,11 @@ export default function AuthorPage({ match, history }) {
         }
     }, [author.image, modified])
 
-    useEffect(() => {
-        return () => {
-            localStorage.clear()
-        }
-    }, [])
+    const cleanUp = () => {
+        localStorage.removeItem(`author_${match.params.id}`)
+        localStorage.removeItem(`image_${match.params.id}`)
+        localStorage.removeItem(`modified_${match.params.id}`)
+    }
 
     const exists = (v) => {
         return v !== undefined
@@ -120,7 +120,7 @@ export default function AuthorPage({ match, history }) {
         }
         if(res.status === 200) {
             setStatus(<>Author successfully edited. <span className={classes.link} onClick={() => window.location.reload()}>Refresh</span> the page to see.</>)
-            localStorage.clear()
+            
         } else {
             setStatus(`An error occurred! API returned with status ${res.status}.`)
         }
@@ -141,6 +141,7 @@ export default function AuthorPage({ match, history }) {
         }
         if(res.status === 204) {
             setStatus(<>Author successfully deleted. Go back to all authors <Link className={classes.link} to={`/authors`}>here</Link>.</>)
+            cleanUp()
         } else {
             setStatus(`An error occurred! API returned with status ${res.status}.`)
         }
@@ -153,7 +154,7 @@ export default function AuthorPage({ match, history }) {
             <div className={classes.page}>
                 {!loggedIn && <Warning />}
                 <Link to="/authors">
-                    <Button variant="outlined" color="primary">
+                    <Button variant="outlined" color="primary" onClick={cleanUp}>
                         Back to all authors
                     </Button>
                 </Link>
