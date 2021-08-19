@@ -5,8 +5,10 @@ import cors from 'cors'
 import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import cookieParser from 'cookie-parser'
+import crypto from 'crypto'
 
-import { OAuth2Client } from 'google-auth-library'
+import pkg from 'google-auth-library'
+const { OAuth2Client } = pkg
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
@@ -14,12 +16,13 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 import { authorsRouter, postsRouter, postRouter, visitsRouter } from './routers.js'
+import { resolveSoa } from 'dns'
 
 dotenv.config()
 const PORT = process.env.PORT || 5000
 
 mongoose.set('useFindAndModify', false)
-mongoose.connect(`mongodb+srv://root:${process.env.DB_PASSWORD}@cluster0.swmsg.mongodb.net/lselawreview?retryWrites=true&w=majority`, {useNewUrlParser: true, useUnifiedTopology: true})
+mongoose.connect(`mongodb+srv://lse:${process.env.DB_PASSWORD}@lselr.kea2z.mongodb.net/LSELR?retryWrites=true&w=majority`, {useNewUrlParser: true, useUnifiedTopology: true})
 
 const db = mongoose.connection
 db.on('error', console.error.bind(console, 'Connection error:'))
@@ -35,9 +38,10 @@ app.set('view engine', 'ejs')
 
 const authMiddleware = (req, res, next) => {
 
-    let token = req.cookies['session-token']
+    const token = req.cookies['session-token']
+    const pw = req.cookies['auth-token']
 
-    let user = {}
+    const user = {}
     async function verify() {
         const ticket = await client.verifyIdToken({
             idToken: token,
@@ -54,15 +58,20 @@ const authMiddleware = (req, res, next) => {
       verify()
       .then(()=>{
           req.user = user
-          next()
+          if(pw != process.env.PASSWORD) {
+            res.status(401).render('auth', { client_id: process.env.GOOGLE_CLIENT_ID, dest: req.url, error: 'Invalid access code! Please sign in again.' })
+          } else {
+            next()
+          }
       })
       .catch(e=> {
-          res.redirect(401, `/login?dest=${req.url}`)
+        res.status(401).render('auth', { client_id: process.env.GOOGLE_CLIENT_ID, dest: req.url, error: 'Please enter the access code and sign in using Google.' })
       })
 }
 
 app.post('/login', (req,res)=>{
-    let token = req.body.token
+    const token = req.body.token
+    const pw = req.body.password
 
     async function verify() {
         const ticket = await client.verifyIdToken({
@@ -77,6 +86,7 @@ app.post('/login', (req,res)=>{
       verify()
       .then(()=>{
           res.cookie('session-token', token)
+          res.cookie('auth-token', crypto.createHash('md5').update(pw).digest('hex'))
           res.status(200).send()
       })
       .catch(e => {

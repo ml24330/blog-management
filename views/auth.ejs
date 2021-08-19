@@ -5,15 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-signin-client_id" content="<%- client_id %>">
     <script src="https://apis.google.com/js/platform.js" async defer></script>
-    <link rel="stylesheet" href="ejs/styles.css" type="text/css">
     <title>Login</title>
     <style>
         #my-signin2 {
             margin: 10px;
         }
+        #my-signin2 > * {
+            margin: auto;
+        }
+        #access {
+           text-align: center;
+           font-size: 1.4rem;
+        }
+        #password {
+            width: 180px;
+            height: 25px;
+            font-size: 1.4rem;
+        }
         #msg{
+            color: red;
             font-size: 1.4rem;
             margin: 10px;
+            text-align: center;
         }
     </style>
 </head>
@@ -33,6 +46,7 @@
         }
     </script>
 
+    <div id="access"><label for="password">Access Code: </label><input type="password" id="password"></div>
     <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
     <div id="msg"><%- error %></div>
 
@@ -44,7 +58,7 @@
     }
     </script>
 
-    <script>
+    <script defer>
     function onSignIn(googleUser) {
         const profile = googleUser.getBasicProfile();
         const id_token = googleUser.getAuthResponse().id_token;
@@ -67,7 +81,8 @@
                 document.getElementById('msg').innerHTML = xhr.responseText
             }
         };
-        xhr.send(JSON.stringify({token : id_token}));
+        xhr.send(JSON.stringify({token: id_token, password: document.getElementById('password').value}));
+        
       }
     </script>
     

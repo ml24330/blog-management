@@ -26,7 +26,9 @@ const useStyles = makeStyles(theme => ({
 
 export default function Navigation({ name }) {
 
-  const [_0, _1, removeCookie] = useCookies(["user"])
+  const [_0, _1, removeCookie] = useCookies(['session-token'])
+  const [_2, _3, _removeCookie] = useCookies(['auth-token'])
+
 
   const classes = useStyles()
 
@@ -46,7 +48,7 @@ export default function Navigation({ name }) {
         <Typography variant="h6" className={classes.title}>
           {name}
         </Typography>
-        <Button color="inherit" onClick={() => {removeCookie('session-token');localStorage.clear();window.location.reload()}}>
+        <Button color="inherit" onClick={() => {removeCookie('session-token');_removeCookie('auth-token');localStorage.clear();window.location.reload()}}>
           Log out
         </Button>
       </Toolbar>
