@@ -3,6 +3,7 @@ import Navigation from '../components/Navigation'
 import { DataGrid } from '@material-ui/data-grid'
 import Typography from '@material-ui/core/Typography'
 import { makeStyles } from '@material-ui/core/styles'
+import { API_URL } from '../config' 
 
 const useStyles = makeStyles({
     title: {
@@ -41,7 +42,7 @@ export default function VisitorsPage({ history }) {
     useEffect(() => {
         (async () => {
             const pw = window.prompt('Please enter the access code to view this page!')
-            const res = await fetch(`http://localhost:5001/api/visits/visitors?pw=${pw}`, { 
+            const res = await fetch(`${API_URL}/visits/visitors?pw=${pw}`, { 
                 credentials: 'include'
              })
             if(res.status !== 200) {
