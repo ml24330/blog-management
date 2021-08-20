@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-import { Post, Author, Visit } from './models.js'
+import { Post, Author, Visit, Visitor } from './models.js'
 
 dotenv.config()
 
@@ -347,6 +347,17 @@ visitsRouter.get('/', async (req, res) => {
     } catch(e) {
         console.log(`Error while indexing visits: ${e}`)
         return res.status(404).json('An error has occurred!')
+    }
+})
+
+visitsRouter.get('/visitors', async (req, res) => {
+    try {
+        if(req.query.pw !== process.env.DB_PASSWORD) throw new Error('Invalid password!')
+        const visitors = await Visitor.find({})
+        return res.json(visitors)
+    } catch(e) {
+        console.log(`Error while indexing visitors: ${e}`)
+        return res.status(400).json('An error has occurred!')
     }
 })
 

@@ -32,6 +32,12 @@ const useStyles = makeStyles({
     pos: {
       marginBottom: 12,
     },
+    foot: {
+      position: 'absolute',
+      bottom: '10px',
+      left: '10px',
+      textDecoration: 'underline'
+    }
   })
 
 export default function HomePage() {
@@ -75,6 +81,9 @@ export default function HomePage() {
                     </Card>
                 </Link>
             </Box>
+            <Link to="/visitors"><Typography className={classes.foot} variant="body2" component="p">
+                Visitors
+            </Typography></Link>
         </div>
         </>
     )

@@ -25,4 +25,10 @@ const Visit = mongoose.model('Visit', new mongoose.Schema({
     visits: Number
 }))
 
-export {Post, Author, Visit}
+const Visitor = mongoose.model('Visitor', new mongoose.Schema({
+    time: Date,
+    location: String,
+    entry: String
+}))
+
+export {Post, Author, Visit, Visitor}

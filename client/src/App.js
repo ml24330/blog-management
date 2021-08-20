@@ -9,6 +9,7 @@ import PostPage from './pages/PostPage'
 import AuthorPage from './pages/AuthorPage'
 import NotFoundPage from './pages/NotFoundPage'
 import ScrollToTop from './ScrollToTop'
+import VisitorsPage from './pages/VisitorsPage'
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/authors" exact component={AuthorsPage} />
           <Route path="/post/:id" exact component={PostPage} />
           <Route path="/author/:id" exact component={AuthorPage} />
+          <Route path="/visitors" exact component={VisitorsPage} />
           <Route path="/" component={NotFoundPage} />
         </Switch> 
     </Router>
