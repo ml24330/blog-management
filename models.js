@@ -7,7 +7,11 @@ const Post = mongoose.model('Post', new mongoose.Schema({
     authors: [String],
     date: Date,
     categories: [String],
-    content: String
+    content: String,
+    image: {
+        data: Buffer,
+        contentType: String
+    }
 }))
 
 const Author = mongoose.model('Author', new mongoose.Schema({

@@ -46,25 +46,49 @@ const slugify = (string) => {
 */
 
 // CREATE one new post
-postsRouter.post('/', async (req, res) => {
+postsRouter.post('/', upload.single('image'), async (req, res) => {
     try {
         const { title, author, authors, categories, content, date } = req.body
         if(!title || !categories || !content || !date || (!author && !authors)) {
             throw new Error('Missing fields!')
         }
         const slug = slugify(title)
-        const post = new Post({
-            slug,
-            title,
-            author,
-            authors,
-            categories,
-            content,
-            date
-        })
+        let post
+        if(req.file) {
+            const image = {
+                data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
+                contentType: 'image/png'
+            }
+            post = new Post({
+                slug,
+                title,
+                author,
+                authors,
+                categories,
+                content,
+                date,
+                image
+            })
+        } else {
+            post = new Post({
+                slug,
+                title,
+                author,
+                authors,
+                categories,
+                content,
+                date
+            })
+        }
         await post.save()
+        if(req.file) {
+            fs.unlinkSync(path.join(__dirname + '/uploads/' + req.file.filename))
+        }
         return res.json(post)
     } catch(e) {
+        if(req.file) {
+            fs.unlinkSync(path.join(__dirname + '/uploads/' + req.file.filename))
+        }
         console.log(`Error while creating new post: ${e}`)
         return res.status(400).json('An error has occurred!')
     }
@@ -118,7 +142,7 @@ postsRouter.get('/:category', async (req, res) => {
 })
 
 // UPDATE one post
-postsRouter.patch('/:id', async (req, res) => {
+postsRouter.patch('/:id', upload.single('image'), async (req, res) => {
     try {
         const { title, author, authors, categories, content, date } = req.body
         if(!title || !categories || !content || !date || (!author && !authors)) {
@@ -135,6 +159,9 @@ postsRouter.patch('/:id', async (req, res) => {
         const doc = await Post.findOneAndUpdate({ _id: req.params.id }, post, { new: true })
         return res.json(doc)
     } catch(e) {
+        if(req.file) {
+            fs.unlinkSync(path.join(__dirname + '/uploads/' + req.file.filename))
+        }
         console.log(`Error while updating post: ${e}`)
         return res.status(400).json('An error has occurred!')
     }
@@ -222,6 +249,9 @@ authorsRouter.post('/', upload.single('image'), async (req, res) => {
         }
         return res.json(author)
     } catch(e) {
+        if(req.file) {
+            fs.unlinkSync(path.join(__dirname + '/uploads/' + req.file.filename))
+        }
         console.log(`Error while creating new author: ${e}`)
         return res.status(400).json('An error has occurred!')
     }
@@ -299,6 +329,9 @@ authorsRouter.patch('/:id', upload.single('image'), async (req, res) => {
         }
         return res.json(doc)
     } catch(e) {
+        if(req.file) {
+            fs.unlinkSync(path.join(__dirname + '/uploads/' + req.file.filename))
+        }
         console.log(`Error while updating author: ${e}`)
         return res.status(400).json('An error has occurred!')
     }

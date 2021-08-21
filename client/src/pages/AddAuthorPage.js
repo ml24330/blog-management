@@ -60,16 +60,17 @@ export default function AddAuthorPage() {
     }
 
     const handleSubmit = async () => {
-        const formData = new FormData()
         if(!author.name || !author.bio || !author.category) {
             setStatus('Missing fields!')
             return
         }
+        const formData = new FormData()
         formData.append('image', image)
         formData.append('name', author.name)
         formData.append('bio', author.bio)
         formData.append('category', author.category)
         const res = await fetch(`${API_URL}/authors`, {
+            credentials: 'include',
             method: 'POST',
             body: formData
         })

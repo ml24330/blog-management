@@ -100,6 +100,10 @@ app.get('/login', (req, res) => {
     return res.render('auth', { client_id: process.env.GOOGLE_CLIENT_ID, dest: req.query.dest, error: req.query.error })
 })
 
+app.get('/convert', (req, res) => {
+    return res.render('converter')
+})
+
 app.use(authMiddleware)
 
 app.use('/api/authors', authorsRouter)

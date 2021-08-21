@@ -62,12 +62,17 @@ const useStyles = makeStyles({
         '&:hover': {
             color: 'purple'
         }
+    },
+    image: {
+        width: '40%',
+        margin: '10px 0'
     }
 })
 
 export default function AddPostPage() {
 
     const [post, setPost] = useLocalStorage('post', POST_TEMPLATE)
+    const [image, setImage] = useLocalStorage('image', {})
     const [newAuthor, setNewAuthor] = useLocalStorage('n-a', '')
     const [newCategory, setNewCategory] = useLocalStorage('n-c', '')
     
@@ -126,29 +131,21 @@ export default function AddPostPage() {
             setStatus('The number of visits must be a non-negative integer!')
             return
         }
-        let _post
+        const formData = new FormData()
+        formData.append('image', image)
+        formData.append('title', post.title)
+        formData.append('categories', post.categories)
+        formData.append('date', post.date)
+        formData.append('content', post.content)
         if(post.authors.length > 1) {
-            _post = {
-                title: post.title,
-                authors: post.authors,
-                categories: post.categories,
-                date: post.date,
-                content: post.content
-            }
+            formData.append('authors', post.authors)
         } else {
-            _post = {
-                title: post.title,
-                author: post.authors[0],
-                categories: post.categories,
-                date: post.date,
-                content: post.content
-            }
+            formData.append('author', post.authors[0])
         }
         const post_res = await fetch(`${API_URL}/posts`, {
             credentials: 'include',
             method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify(_post)
+            body: formData
         })
         if(post_res.status === 401) {
             setLoggedIn(false)
@@ -236,6 +233,17 @@ export default function AddPostPage() {
 
                 {exists(post.visits) && (<div>
                     <TextField className={classes.input_long} label="Views" type="number" value={post.visits} onChange={e => handleInput(e, 'visits')} />
+                </div>)}
+
+                {exists(image) && (<div>
+                    {image.size && (
+                        <div>
+                            <img className={classes.image} src={URL.createObjectURL(image)} alt="avatar "/>
+                        </div>
+                    )}    
+                    <div>
+                        <input className={classes.input_long} type="file" accept=".png,.jpg,.jpeg,.gif,.webp,.heif" onChange={e => setImage(e.target.files[0])} />
+                    </div>
                 </div>)}
 
                 {exists(post.content) && (<div>
