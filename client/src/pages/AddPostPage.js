@@ -132,7 +132,6 @@ export default function AddPostPage() {
             return
         }
         const formData = new FormData()
-        formData.append('image', image)
         formData.append('title', post.title)
         formData.append('categories', post.categories)
         formData.append('date', post.date)
@@ -156,6 +155,13 @@ export default function AddPostPage() {
             return
         }
         const data = await post_res.json()
+        const f = new FormData()
+        f.append('image', image)
+        await fetch(`${API_URL}/images/${data.slug}`, {
+            credentials: 'include',
+            method: 'POST',
+            body: f
+        })
         const slug_exists = await fetch(`${API_URL}/visits/${data.slug}`, {
             credentials: 'include'
         })

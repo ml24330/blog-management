@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-import { Post, Author, Visit, Visitor } from './models.js'
+import { Post, Author, Visit, Visitor, Image } from './models.js'
 
 dotenv.config()
 
@@ -17,6 +17,7 @@ const postsRouter = express.Router()
 const postRouter = express.Router()
 const authorsRouter = express.Router()
 const visitsRouter = express.Router()
+const imagesRouter = express.Router()
 
 /*
     Set up multer
@@ -148,15 +149,35 @@ postsRouter.patch('/:id', upload.single('image'), async (req, res) => {
         if(!title || !categories || !content || !date || (!author && !authors)) {
             throw new Error('Missing fields!')
         }
-        const post = {
-            title,
-            author,
-            authors: authors || [],
-            categories,
-            content,
-            date
+        let post
+        if(req.file) {
+            const image = {
+                data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
+                contentType: 'image/png'
+            }
+            post = {
+                title,
+                author,
+                authors: authors || [],
+                categories,
+                content,
+                date,
+                image
+            }
+        } else {
+            post = {
+                title,
+                author,
+                authors: authors || [],
+                categories,
+                content,
+                date
+            }
         }
         const doc = await Post.findOneAndUpdate({ _id: req.params.id }, post, { new: true })
+        if(req.file) {
+            fs.unlinkSync(path.join(__dirname + '/uploads/' + req.file.filename))
+        }
         return res.json(doc)
     } catch(e) {
         if(req.file) {
@@ -463,4 +484,70 @@ visitsRouter.delete('/:id', async (req, res) => {
     }
 })
 
-export { postsRouter, postRouter, authorsRouter, visitsRouter }
+imagesRouter.post('/:slug', upload.single('image'), async(req, res) => {
+    try {
+        if(req.file) {
+            const image = {
+                data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
+                contentType: 'image/png'
+            }
+            const img = new Image({
+                image,
+                slug: req.params.slug
+            })
+            await img.save()
+            fs.unlinkSync(path.join(__dirname + '/uploads/' + req.file.filename))
+            return res.json(img)
+        } else {
+            throw new Error('No images found!')
+        }
+    } catch(e) {
+        if(req.file) {
+            fs.unlinkSync(path.join(__dirname + '/uploads/' + req.file.filename))
+        }
+        console.log(`Error while posting image: ${e}`)
+        return res.status(400).json('An error has occurred!')
+    }
+})
+
+imagesRouter.patch('/:slug', upload.single('image'), async (req, res) => {
+    try {
+        if(req.file) {
+            const image = {
+                data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
+                contentType: 'image/png'
+            }
+            let img
+            img = await Image.findOneAndUpdate({slug: req.params.slug}, {image}, {new: true})
+            if(!img) {
+                img = new Image({image, slug: req.params.slug})
+                await img.save()
+            }
+            fs.unlinkSync(path.join(__dirname + '/uploads/' + req.file.filename))
+            return res.json(img)
+        } else {
+            throw new Error('No images found!')
+        }
+    } catch(e) {
+        if(req.file) {
+            fs.unlinkSync(path.join(__dirname + '/uploads/' + req.file.filename))
+        }
+        console.log(`Error while posting image: ${e}`)
+        return res.status(400).json('An error has occurred!')
+    }
+})
+
+imagesRouter.get('/:slug', async (req, res) => {
+    try {
+        const img = await Image.findOne({ slug: req.params.slug })
+        if(!img) {
+            throw new Error('No documents found!')
+        }
+        return res.json(img)
+    } catch(e) {
+        console.log(`Error while indexing image: ${e}`)
+        return res.status(400).json('An error has occurred!')
+    }
+})
+
+export { postsRouter, postRouter, authorsRouter, visitsRouter, imagesRouter }

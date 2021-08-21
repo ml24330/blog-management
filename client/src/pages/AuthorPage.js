@@ -38,7 +38,7 @@ const useStyles = makeStyles({
 export default function AuthorPage({ match, history }) {
 
     const [author, setAuthor] = useLocalStorage(`author_${match.params.id}`, {})
-    const [image, setImage] = useLocalStorage(`image_${match.params.id}`, '')
+    const [image, setImage] = useState({})
     const [modified, setModified] = useLocalStorage(`modified_${match.params.id}`, false)
     const [status, setStatus] = useState('')
     const [loggedIn, setLoggedIn] = useState(true)
@@ -65,15 +65,13 @@ export default function AuthorPage({ match, history }) {
     }, [match.params.id, modified])
 
     useEffect(() => {
-        if(!modified) {
-            try {
-                const img = new Buffer.from(author.image.data).toString('base64')
-                setImage(`data:image/png;base64,${img}`)
-            } catch {
-                setImage(placeholder)
-            }
+        try {
+            const img = new Buffer.from(author.image.data).toString('base64')
+            setImage(`data:image/png;base64,${img}`)
+        } catch {
+            setImage(placeholder)
         }
-    }, [author.image, modified])
+    }, [author.image])
 
     const cleanUp = () => {
         localStorage.removeItem(`author_${match.params.id}`)

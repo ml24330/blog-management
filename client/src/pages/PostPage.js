@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography'
 import AddIcon from '@material-ui/icons/Add'
 import Warning from '../components/Warning'
 import { API_URL } from '../config'
+import placeholder from '../assets/images/placeholder.jpeg' 
 
 const useStyles = makeStyles({
     page: {
@@ -52,6 +53,10 @@ const useStyles = makeStyles({
         '&:hover': {
             color: 'purple'
         }
+    },
+    image: {
+        width: '40%',
+        margin: '10px 0'
     }
 })
 
@@ -61,6 +66,7 @@ export default function PostPage({ match, history }) {
     const [modified, setModified] = useLocalStorage(`modified_${match.params.id}`, false)
     const [newAuthor, setNewAuthor] = useLocalStorage(`n-a_${match.params.id}`, '')
     const [newCategory, setNewCategory] = useLocalStorage(`n-c_${match.params.id}`, '')
+    const [image, setImage] = useState(placeholder)
     
     const [status, setStatus] = useState('')
     const [isOpen, setIsOpen] = useState(false)
@@ -97,6 +103,25 @@ export default function PostPage({ match, history }) {
             })()
         }
     }, [match.params.id, modified])
+
+    useEffect(() => {
+        (async () => {
+            const res = await fetch(`${API_URL}/images/${post.slug}`, {
+                credentials: 'include'
+            })
+            if(res.status !== 200) {
+                setImage(placeholder)
+                console.log(placeholder)
+            } else {
+                const { image } = await res.json()
+                if(image) {
+                    setImage(`data:image/png;base64,${new Buffer.from(image.data).toString('base64')}`)
+                } else {
+                    setImage(placeholder)
+                }
+            }
+        })()
+    }, [post.slug])
 
     const cleanUp = () => {
             localStorage.removeItem(`post_${match.params.id}`)
@@ -156,29 +181,20 @@ export default function PostPage({ match, history }) {
             setStatus('The number of visits must be a non-negative integer!')
             return
         }
-        let _post
+        const formData = new FormData()
+        formData.append('title', post.title)
+        formData.append('categories', post.categories)
+        formData.append('date', post.date)
+        formData.append('content', post.content)
         if(post.authors.length > 1) {
-            _post = {
-                title: post.title,
-                authors: post.authors,
-                categories: post.categories,
-                date: post.date,
-                content: post.content
-            }
+            formData.append('authors', post.authors)
         } else {
-            _post = {
-                title: post.title,
-                author: post.authors[0],
-                categories: post.categories,
-                date: post.date,
-                content: post.content
-            }
+            formData.append('author', post.authors[0])
         }
         const post_res = await fetch(`${API_URL}/posts/${post._id}`, {
             credentials: 'include',
             method: 'PATCH',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify(_post)
+            body: formData
         })
         if(post_res.status === 401) {
             setLoggedIn(false)
@@ -186,6 +202,17 @@ export default function PostPage({ match, history }) {
         }
         if(post_res.status !== 200) {
             setStatus(`An error occurred! API returned with status ${post_res.status}`)
+            return
+        }
+        const f = new FormData()
+        f.append('image', image)
+        const img_res = await fetch(`${API_URL}/images/${post.slug}`, {
+            credentials: 'include',
+            method: 'PATCH',
+            body: f
+        })
+        if(img_res.status !== 200) {
+            setStatus(`An error occurred! API returned with status ${img_res.status}`)
             return
         }
         const visits_res = await fetch(`${API_URL}/visits/${post.slug}`, {
@@ -230,7 +257,7 @@ export default function PostPage({ match, history }) {
         <>
             <Navigation name={post.title} />
             
-            <PreviewComponent setIsOpen={setIsOpen} isOpen={isOpen} post={post} />
+            <PreviewComponent setIsOpen={setIsOpen} isOpen={isOpen} post={post} image={image} />
 
             <div className={classes.page} >
                 {!loggedIn && <Warning />}
@@ -264,6 +291,13 @@ export default function PostPage({ match, history }) {
 
                 {exists(post.visits) && (<div>
                     <TextField className={classes.input_long} label="Views" type="number" value={post.visits} onChange={e => handleInput(e, 'visits')} />
+                </div>)}
+
+                {exists(image) && (<div>
+                    <img className={classes.image} src={image} onError={(e)=>{e.target.onerror = null; e.target.src= URL.createObjectURL(image)}} alt="avatar" />
+                    <div>
+                        <input className={classes.input_long} type="file" accept=".png,.jpg,.jpeg,.gif,.webp,.heif" onChange={e => {setModified(true); setImage(e.target.files[0])}} />
+                    </div>
                 </div>)}
 
                 {exists(post.content) && (<div>

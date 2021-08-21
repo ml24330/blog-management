@@ -15,8 +15,7 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-import { authorsRouter, postsRouter, postRouter, visitsRouter } from './routers.js'
-import { resolveSoa } from 'dns'
+import { authorsRouter, postsRouter, postRouter, visitsRouter, imagesRouter } from './routers.js'
 
 dotenv.config()
 const PORT = process.env.PORT || 5000
@@ -100,16 +99,13 @@ app.get('/login', (req, res) => {
     return res.render('auth', { client_id: process.env.GOOGLE_CLIENT_ID, dest: req.query.dest, error: req.query.error })
 })
 
-app.get('/convert', (req, res) => {
-    return res.render('converter')
-})
-
 app.use(authMiddleware)
 
 app.use('/api/authors', authorsRouter)
 app.use('/api/posts', postsRouter)
 app.use('/api/post', postRouter)
 app.use('/api/visits', visitsRouter)
+app.use('/api/images', imagesRouter)
 
 if(process.env.NODE_ENV === 'production'){
     app.use(express.static('build'))

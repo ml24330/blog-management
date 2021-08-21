@@ -53,7 +53,7 @@ export default function HomePage() {
                 Welcome!
             </Box>
             </Typography>
-            <Box display="flex">
+            <Box>
                 <Link to="/posts" className={classes.root}>
                     <Card className={classes.card}>
                         <CardContent>
@@ -76,6 +76,19 @@ export default function HomePage() {
                             <br />
                             <Typography variant="body2" component="p">
                                 Click here to view and edit the details of all contributors and editors of the LSE Law Review Blog.
+                            </Typography>
+                        </CardContent>
+                    </Card>
+                </Link>
+                <Link to="/converter" className={classes.root}>
+                    <Card className={classes.card}>
+                        <CardContent>
+                            <Typography variant="h5" component="h2">
+                                Blog Converter
+                            </Typography>
+                            <br />
+                            <Typography variant="body2" component="p">
+                                Click here to insert footnotes and references to an article.
                             </Typography>
                         </CardContent>
                     </Card>

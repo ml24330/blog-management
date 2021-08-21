@@ -7,11 +7,7 @@ const Post = mongoose.model('Post', new mongoose.Schema({
     authors: [String],
     date: Date,
     categories: [String],
-    content: String,
-    image: {
-        data: Buffer,
-        contentType: String
-    }
+    content: String
 }))
 
 const Author = mongoose.model('Author', new mongoose.Schema({
@@ -35,4 +31,12 @@ const Visitor = mongoose.model('Visitor', new mongoose.Schema({
     entry: String
 }))
 
-export {Post, Author, Visit, Visitor}
+const Image = mongoose.model('Image', new mongoose.Schema({
+    slug: String,
+    image: {
+        data: Buffer,
+        contentType: String
+    }
+}))
+
+export {Post, Author, Visit, Visitor, Image}
