@@ -32,6 +32,16 @@ const useStyles = makeStyles({
     image: {
         width: '30%',
         margin: '10px 0'
+    },
+    remove: {
+        color: 'red', 
+        fontSize: '1.2rem', 
+        cursor: 'pointer', 
+        marginLeft: '5px',
+        textDecoration: 'underline',
+        '&:hover': {
+            color: 'purple'
+        }
     }
 })
 
@@ -42,6 +52,7 @@ export default function AuthorPage({ match, history }) {
     const [modified, setModified] = useLocalStorage(`modified_${match.params.id}`, false)
     const [status, setStatus] = useState('')
     const [loggedIn, setLoggedIn] = useState(true)
+    const [hasImage, setHasImage] = useState(false)
 
     const classes = useStyles()
 
@@ -68,10 +79,11 @@ export default function AuthorPage({ match, history }) {
         try {
             const img = new Buffer.from(author.image.data).toString('base64')
             setImage(`data:image/png;base64,${img}`)
+            setHasImage(true)
         } catch {
             setImage(placeholder)
         }
-    }, [author.image])
+    }, [])
 
     const cleanUp = () => {
         localStorage.removeItem(`author_${match.params.id}`)
@@ -146,6 +158,11 @@ export default function AuthorPage({ match, history }) {
         }
     }
 
+    const handleRemoveImage = () => {
+        setHasImage(false)
+        setImage(null)
+    }
+
     return (
         <>
             <Navigation name={author.name} />
@@ -171,9 +188,13 @@ export default function AuthorPage({ match, history }) {
                 </div>)}
 
                 {exists(image) && (<div>
-                    <img className={classes.image} src={image} onError={(e)=>{e.target.onerror = null; e.target.src= URL.createObjectURL(image)}} alt="avatar" />
+                    {image === null ? 
+                        (<img className={classes.image} src={placeholder} alt="placeholder" />) :
+                        (<img className={classes.image} src={image} onError={(e)=>{e.target.onerror = null; e.target.src= URL.createObjectURL(image)}} alt="avatar" />)
+                    }
                     <div>
-                        <input className={classes.input_long} type="file" accept=".png,.jpg,.jpeg,.gif,.webp,.heif" onChange={e => {setModified(true); setImage(e.target.files[0])}} />
+                        <input className={classes.input_long} type="file" accept=".png,.jpg,.jpeg,.gif,.webp,.heif" onChange={e => {setModified(true); setHasImage(true); setImage(e.target.files[0])}} />
+                        {hasImage && <span className={classes.remove} onClick={handleRemoveImage} >Remove image</span>}
                     </div>
                 </div>)}
 

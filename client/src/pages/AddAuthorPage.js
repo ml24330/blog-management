@@ -8,6 +8,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Warning from '../components/Warning'
 import { API_URL } from '../config'
+import placeholder from '../assets/images/placeholder.png'
 
 const AUTHOR_TEMPLATE = {
     name: '',
@@ -37,15 +38,25 @@ const useStyles = makeStyles({
     image: {
         width: '30%',
         margin: '10px 0'
+    },
+    remove: {
+        color: 'red', 
+        fontSize: '1.2rem', 
+        cursor: 'pointer', 
+        marginLeft: '5px',
+        textDecoration: 'underline',
+        '&:hover': {
+            color: 'purple'
+        }
     }
 })
 
 export default function AddAuthorPage() {
 
     const [author, setAuthor] = useLocalStorage('author', AUTHOR_TEMPLATE)
-    const [image, setImage] = useLocalStorage('image', {})
     const [status, setStatus] = useState('')
     const [loggedIn, setLoggedIn] = useState(true)
+    const [image, setImage] = useState(null)
 
     const classes = useStyles()
 
@@ -89,7 +100,7 @@ export default function AddAuthorPage() {
 
     const handleClear = () => {
         setAuthor(AUTHOR_TEMPLATE)
-        setImage({})
+        setImage(null)
     }
 
     return (
@@ -117,13 +128,13 @@ export default function AddAuthorPage() {
                 </div>)}
 
                 {exists(image) && (<div>
-                    {image.size && (
-                        <div>
-                            <img className={classes.image} src={URL.createObjectURL(image)} alt="avatar "/>
-                        </div>
-                    )}    
+                    {image === null ? 
+                        (<img className={classes.image} src={placeholder} alt="placeholder" />) :
+                        (<img className={classes.image} src={image} onError={(e)=>{e.target.onerror = null; e.target.src= URL.createObjectURL(image)}} alt="avatar" />)
+                    }  
                     <div>
                         <input className={classes.input_long} type="file" accept=".png,.jpg,.jpeg,.gif,.webp,.heif" onChange={e => setImage(e.target.files[0])} />
+                        {image !== null && <span className={classes.remove} onClick={() => setImage(null)}>Remove image</span>}
                     </div>
                 </div>)}
 

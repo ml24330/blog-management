@@ -550,4 +550,14 @@ imagesRouter.get('/:slug', async (req, res) => {
     }
 })
 
+imagesRouter.delete('/:slug', async (req, res) => {
+    try {
+        await Image.findOneAndDelete({ slug: req.params.slug })
+        return res.status(204).send()
+    } catch(e) {
+        console.log(`Error while deleting image: ${e}`)
+        return res.status(400).json('An error has occurred!')
+    }
+})
+
 export { postsRouter, postRouter, authorsRouter, visitsRouter, imagesRouter }

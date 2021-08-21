@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography'
 import AddIcon from '@material-ui/icons/Add'
 import Warning from '../components/Warning'
 import { API_URL } from '../config'
+import placeholder from '../assets/images/placeholder.jpeg'
 
 const POST_TEMPLATE = {
     title: '',
@@ -66,16 +67,26 @@ const useStyles = makeStyles({
     image: {
         width: '40%',
         margin: '10px 0'
+    },
+    remove: {
+        color: 'red', 
+        fontSize: '1.2rem', 
+        cursor: 'pointer', 
+        marginLeft: '5px',
+        textDecoration: 'underline',
+        '&:hover': {
+            color: 'purple'
+        }
     }
 })
 
 export default function AddPostPage() {
 
     const [post, setPost] = useLocalStorage('post', POST_TEMPLATE)
-    const [image, setImage] = useLocalStorage('image', {})
     const [newAuthor, setNewAuthor] = useLocalStorage('n-a', '')
     const [newCategory, setNewCategory] = useLocalStorage('n-c', '')
     
+    const [image, setImage] = useState(null)
     const [status, setStatus] = useState('')
     const [isOpen, setIsOpen] = useState(false)
     const [loggedIn, setLoggedIn] = useState(true)
@@ -120,6 +131,7 @@ export default function AddPostPage() {
         setPost(POST_TEMPLATE)
         setNewAuthor('')
         setNewCategory('')
+        setImage(null)
     }
 
     const handleSubmit = async () => {
@@ -205,7 +217,7 @@ export default function AddPostPage() {
         <>
             <Navigation name={'New Post'} />
 
-            <PreviewComponent setIsOpen={setIsOpen} isOpen={isOpen} post={post} />
+            <PreviewComponent setIsOpen={setIsOpen} isOpen={isOpen} post={post} image={image && image}/>
             
             <div className={classes.page} >
                 {!loggedIn && <Warning />}
@@ -242,13 +254,13 @@ export default function AddPostPage() {
                 </div>)}
 
                 {exists(image) && (<div>
-                    {image.size && (
-                        <div>
-                            <img className={classes.image} src={URL.createObjectURL(image)} alt="avatar "/>
-                        </div>
-                    )}    
+                    {image === null ? 
+                        (<img className={classes.image} src={placeholder} alt="placeholder" />) :
+                        (<img className={classes.image} src={image} onError={(e)=>{e.target.onerror = null; e.target.src= URL.createObjectURL(image)}} alt="avatar" />)
+                    }
                     <div>
                         <input className={classes.input_long} type="file" accept=".png,.jpg,.jpeg,.gif,.webp,.heif" onChange={e => setImage(e.target.files[0])} />
+                        {image !== null && <span className={classes.remove} onClick={() => setImage(null)}>Remove image</span>}
                     </div>
                 </div>)}
 

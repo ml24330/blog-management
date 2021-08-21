@@ -68,7 +68,7 @@ export default function PreviewComponent({ setIsOpen, isOpen, post, image }) {
                             <span className="post-date">{renderDate(post.date)}</span>
                             <span className="post-time"><img src={time} alt="time" />{Math.ceil(readingTime(removeMd(post.content).split('[1]')[0], { wordsPerMinute: 250 }).minutes)} min read</span>
                         </div>
-                        <img className={classes.image} src={image} onError={(e)=>{e.target.onerror = null; e.target.src= URL.createObjectURL(image)}} alt="avatar" />
+                        {image && <img className={classes.image} src={image} onError={(e)=>{e.target.onerror = null; e.target.src= URL.createObjectURL(image)}} alt="avatar" />}
                         <div className="page-content">
                             <ReactMarkdown rehypePlugins={[rehypeRaw]}>{post.content}</ReactMarkdown>
                         </div>

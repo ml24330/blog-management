@@ -39,7 +39,7 @@ const useStyles = makeStyles({
         width: '10%'
     },
     textarea: {
-        margin: '5px',
+        margin: '10px 5px',
         width: '100%',
         maxHeight: '300px',
         overflow: 'scroll',
@@ -57,6 +57,16 @@ const useStyles = makeStyles({
     image: {
         width: '40%',
         margin: '10px 0'
+    },
+    remove: {
+        color: 'red', 
+        fontSize: '1.2rem', 
+        cursor: 'pointer', 
+        marginLeft: '5px',
+        textDecoration: 'underline',
+        '&:hover': {
+            color: 'purple'
+        }
     }
 })
 
@@ -67,6 +77,7 @@ export default function PostPage({ match, history }) {
     const [newAuthor, setNewAuthor] = useLocalStorage(`n-a_${match.params.id}`, '')
     const [newCategory, setNewCategory] = useLocalStorage(`n-c_${match.params.id}`, '')
     const [image, setImage] = useState(placeholder)
+    const [hasImage, setHasImage] = useState(false)
     
     const [status, setStatus] = useState('')
     const [isOpen, setIsOpen] = useState(false)
@@ -111,10 +122,10 @@ export default function PostPage({ match, history }) {
             })
             if(res.status !== 200) {
                 setImage(placeholder)
-                console.log(placeholder)
             } else {
                 const { image } = await res.json()
                 if(image) {
+                    setHasImage(true)
                     setImage(`data:image/png;base64,${new Buffer.from(image.data).toString('base64')}`)
                 } else {
                     setImage(placeholder)
@@ -204,17 +215,6 @@ export default function PostPage({ match, history }) {
             setStatus(`An error occurred! API returned with status ${post_res.status}`)
             return
         }
-        const f = new FormData()
-        f.append('image', image)
-        const img_res = await fetch(`${API_URL}/images/${post.slug}`, {
-            credentials: 'include',
-            method: 'PATCH',
-            body: f
-        })
-        if(img_res.status !== 200) {
-            setStatus(`An error occurred! API returned with status ${img_res.status}`)
-            return
-        }
         const visits_res = await fetch(`${API_URL}/visits/${post.slug}`, {
             credentials: 'include',
             method: 'PATCH',
@@ -228,6 +228,24 @@ export default function PostPage({ match, history }) {
         if(visits_res.status !== 200) {
             setStatus(`An error occurred! API returned with status ${visits_res.status}`)
             return
+        }
+        if(image !== null) {
+            const f = new FormData()
+            f.append('image', image)
+            const img_res = await fetch(`${API_URL}/images/${post.slug}`, {
+                credentials: 'include',
+                method: 'PATCH',
+                body: f
+            })
+            if(img_res.status !== 200) {
+                setStatus(`An error occurred! API returned with status ${img_res.status}`)
+                return
+            }
+        } else {
+            await fetch(`${API_URL}/images/${post.slug}`, {
+                credentials: 'include',
+                method: 'DELETE'
+            })
         }
         setStatus(<>Post successfully saved. <span className={classes.link} onClick={() => {setModified(false);window.location.reload()}}>Refresh</span> the page to see.</>)
     }
@@ -253,11 +271,16 @@ export default function PostPage({ match, history }) {
         }
     }
 
+    const handleRemoveImage = () => {
+        setHasImage(false)
+        setImage(null)
+    }
+
     return (
         <>
             <Navigation name={post.title} />
             
-            <PreviewComponent setIsOpen={setIsOpen} isOpen={isOpen} post={post} image={image} />
+            <PreviewComponent setIsOpen={setIsOpen} isOpen={isOpen} post={post} image={hasImage && image} />
 
             <div className={classes.page} >
                 {!loggedIn && <Warning />}
@@ -294,9 +317,13 @@ export default function PostPage({ match, history }) {
                 </div>)}
 
                 {exists(image) && (<div>
-                    <img className={classes.image} src={image} onError={(e)=>{e.target.onerror = null; e.target.src= URL.createObjectURL(image)}} alt="avatar" />
+                    {image === null ? 
+                        (<img className={classes.image} src={placeholder} alt="placeholder" />) :
+                        (<img className={classes.image} src={image} onError={(e)=>{e.target.onerror = null; e.target.src= URL.createObjectURL(image)}} alt="avatar" />)
+                    }
                     <div>
-                        <input className={classes.input_long} type="file" accept=".png,.jpg,.jpeg,.gif,.webp,.heif" onChange={e => {setModified(true); setImage(e.target.files[0])}} />
+                        <input className={classes.input_long} type="file" accept=".png,.jpg,.jpeg,.gif,.webp,.heif" onChange={e => {setModified(true); setHasImage(true); setImage(e.target.files[0])}} />
+                        {hasImage && <span className={classes.remove} onClick={handleRemoveImage} >Remove image</span>}
                     </div>
                 </div>)}
 
