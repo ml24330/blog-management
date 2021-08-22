@@ -37,18 +37,15 @@ const useStyles = makeStyles({
     }
 })
 
-const bodyRegexSimple = /\[([^\[]+)\]/g
-const bodyRegexFtn = /\[\^\^\[([^\[]+)\]\^\^\]\(\#\_ftn[^\)]+\)/g
+const bodyRegexSimple = new RegExp(/\[([^\[]+)\]/g)
 
-const footnoteRegexSimple = /\[([^\[]+)\] (.+\n)*/g
-const footnoteRegexFtn = /\[\[([^\[]+)\]\]\(\#\_ftnref[^\)]+\) (.+\n)*/g
+const footnoteRegexSimple = new RegExp(/\[([^\[]+)\]/g)
 
 export default function Converter() {
 
     const classes = useStyles()
 
     const [hasConverted, setHasConverted] = useState(false)
-    const [format, setFormat] = useState('simple')
 
     const body = useRef(null)
     const footnote = useRef(null)
@@ -56,15 +53,13 @@ export default function Converter() {
     function convertArticleBody() {
         if (hasConverted) { return }
 
-        let regex = format === "simple" ? bodyRegexSimple : bodyRegexFtn
-        body.current.value = body.current.value.replace(regex, "<a class=\"inline-reference\" id=\"inline$1\" href=\"#$1\">$1</a>")
+        body.current.value = body.current.value.replace(bodyRegexSimple, "<a class=\"inline-reference\" id=\"inline$1\" href=\"#$1\">$1</a>")
     }
 
     function convertFootnotes() {
         if (hasConverted) { return }
 
-        let regex = format === "simple" ? footnoteRegexSimple : footnoteRegexFtn
-        footnote.current.value = footnote.current.value.replace(regex, "<a class=\"reference\" id=\"$1\" href=\"#inline$1\">[$1]</a>$2")
+        footnote.current.value = footnote.current.value.replace(footnoteRegexSimple, "<a class=\"reference\" id=\"$1\" href=\"#inline$1\">[$1]</a>$2")
     }
 
     function lockArticle() {
@@ -128,14 +123,8 @@ export default function Converter() {
                         <label for="footnotestextbox" className={classes.label}>Footnotes:</label>
                         <textarea className={classes.textarea} id="footnotestextbox" ref={footnote} placeholder="Type or paste the article footnotes section here, then click the buttons below to convert the footnote format."></textarea>
                     </div>
-                    <br />
 
                     <div className={classes.button} style={{height: '10%'}}>
-                        <label for="formatpicker" className={classes.label}>Format: </label>
-                        <Select defaultValue="simple" id="formatpicker" className={classes.select}>
-                            <MenuItem value="simple">Simple: [1] </MenuItem>
-                            <MenuItem value="ftn">Advanced: [^^[1]^^](#_ftn1) </MenuItem>
-                        </Select>
                         <br />
                         <Button variant="contained" color="primary" onClick={convertCopyButtonClicked} className={classes.button}>Convert and Copy Entire Article</Button>
                         <Button variant="contained" color="primary" onClick={convertButtonClicked} className={classes.button}>Convert Only</Button>
