@@ -75,6 +75,7 @@ export default function AddAuthorPage() {
             setStatus('Missing fields!')
             return
         }
+        setStatus('Saving...')
         const formData = new FormData()
         formData.append('image', image)
         formData.append('name', author.name)

@@ -143,6 +143,7 @@ export default function AddPostPage() {
             setStatus('The number of visits must be a non-negative integer!')
             return
         }
+        setStatus('Saving...')
         const formData = new FormData()
         formData.append('title', post.title)
         formData.append('categories', post.categories)

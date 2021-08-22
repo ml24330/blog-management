@@ -192,6 +192,7 @@ export default function PostPage({ match, history }) {
             setStatus('The number of visits must be a non-negative integer!')
             return
         }
+        setStatus('Saving...')
         const formData = new FormData()
         formData.append('title', post.title)
         formData.append('categories', post.categories)
@@ -229,7 +230,7 @@ export default function PostPage({ match, history }) {
             setStatus(`An error occurred! API returned with status ${visits_res.status}`)
             return
         }
-        if(image !== null) {
+        if(typeof image == 'object' && image !== null) {
             const f = new FormData()
             f.append('image', image)
             const img_res = await fetch(`${API_URL}/images/${post.slug}`, {
@@ -241,7 +242,7 @@ export default function PostPage({ match, history }) {
                 setStatus(`An error occurred! API returned with status ${img_res.status}`)
                 return
             }
-        } else {
+        } else if(image === null) {
             await fetch(`${API_URL}/images/${post.slug}`, {
                 credentials: 'include',
                 method: 'DELETE'
@@ -255,6 +256,7 @@ export default function PostPage({ match, history }) {
         if(alert === false) {
             return
         }
+        setStatus('Deleting...')
         const post_res = await fetch(`${API_URL}/posts/${post._id}`, {
             credentials: 'include',
             method: 'DELETE'

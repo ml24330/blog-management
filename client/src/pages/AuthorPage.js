@@ -73,7 +73,7 @@ export default function AuthorPage({ match, history }) {
                 setAuthor(dat)
             })()
         }
-    }, [match.params.id, modified])
+    }, [modified])
 
     useEffect(() => {
         try {
@@ -82,8 +82,9 @@ export default function AuthorPage({ match, history }) {
             setHasImage(true)
         } catch {
             setImage(placeholder)
+            setHasImage(false)
         }
-    }, [])
+    }, [author.image])
 
     const cleanUp = () => {
         localStorage.removeItem(`author_${match.params.id}`)
@@ -111,11 +112,9 @@ export default function AuthorPage({ match, history }) {
             setStatus('Missing fields!')
             return
         }
+        setStatus('Saving...')
         const formData = new FormData()
-        console.log(image)
-        if(image.size) {
-            formData.append('image', image)
-        }
+        formData.append('image', image)
         formData.append('name', author.name)
         formData.append('bio', author.bio)
         formData.append('category', author.category)
@@ -142,6 +141,7 @@ export default function AuthorPage({ match, history }) {
         if(alert === false) {
             return
         }
+        setStatus('Deleting...')
         const res = await fetch(`${API_URL}/authors/${author._id}`, {
             credentials: 'include',
             method: 'DELETE'

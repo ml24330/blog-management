@@ -337,6 +337,15 @@ authorsRouter.patch('/:id', upload.single('image'), async (req, res) => {
                 category,
                 image
             }
+        } else if(req.body.image === 'null') {
+            author = {
+                name,
+                bio,
+                category,
+                image: {
+                    contentType: 'image/png'
+                }
+            }
         } else {
             author = {
                 name,
