@@ -57,7 +57,7 @@ export default function Converter() {
     function convertFootnotes() {
         if (hasConverted) { return }
 
-        footnote.current.value = footnote.current.value.replace(footnoteRegexSimple, "<a class=\"reference\" id=\"$1\" href=\"#inline$1\">[$1]</a>")
+        footnote.current.value = footnote.current.value.replace(footnoteRegexSimple, "\n<a class=\"reference\" id=\"$1\" href=\"#inline$1\">[$1]</a>")
     }
 
     function lockArticle() {
