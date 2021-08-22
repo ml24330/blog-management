@@ -4,8 +4,6 @@ import { red } from '@material-ui/core/colors'
 import Navigation from '../components/Navigation'
 import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
-import MenuItem from '@material-ui/core/MenuItem'
-import Select from '@material-ui/core/Select'
 
 const useStyles = makeStyles({
     page: {
@@ -59,7 +57,7 @@ export default function Converter() {
     function convertFootnotes() {
         if (hasConverted) { return }
 
-        footnote.current.value = footnote.current.value.replace(footnoteRegexSimple, "<a class=\"reference\" id=\"$1\" href=\"#inline$1\">[$1]</a>$2")
+        footnote.current.value = footnote.current.value.replace(footnoteRegexSimple, "<a class=\"reference\" id=\"$1\" href=\"#inline$1\">[$1]</a>")
     }
 
     function lockArticle() {
