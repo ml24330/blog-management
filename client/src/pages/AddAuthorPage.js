@@ -8,6 +8,9 @@ import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Warning from '../components/Warning'
 import { API_URL } from '../config'
+import InputLabel from '@material-ui/core/InputLabel'
+import MenuItem from '@material-ui/core/MenuItem'
+import Select from '@material-ui/core/Select'
 import placeholder from '../assets/images/placeholder.png'
 
 const AUTHOR_TEMPLATE = {
@@ -124,8 +127,12 @@ export default function AddAuthorPage() {
                     <TextField className={classes.input_long} label="Bio" value={author.bio} onChange={e => handleInput(e, 'bio')} />
                 </div>)}
 
-                {exists(author.category) && (<div>
-                    <TextField className={classes.input_long} label="Category" value={author.category} onChange={e => handleInput(e, 'category')} />
+                {exists(author.category) && (<div className={classes.input_long}>
+                    <InputLabel style={{fontSize: '0.8rem'}}>Category</InputLabel>
+                    <Select value={author.category || ''} onChange={e => handleInput(e, 'category')}>
+                        <MenuItem value="editor">Editor</MenuItem>
+                        <MenuItem value="contributor">Contributor</MenuItem>
+                    </Select>
                 </div>)}
 
                 {exists(image) && (<div>

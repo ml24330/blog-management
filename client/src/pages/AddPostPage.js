@@ -10,6 +10,9 @@ import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined'
 import Typography from '@material-ui/core/Typography'
 import AddIcon from '@material-ui/icons/Add'
 import Warning from '../components/Warning'
+import InputLabel from '@material-ui/core/InputLabel'
+import MenuItem from '@material-ui/core/MenuItem'
+import Select from '@material-ui/core/Select'
 import { API_URL } from '../config'
 import placeholder from '../assets/images/placeholder.jpeg'
 
@@ -84,7 +87,6 @@ export default function AddPostPage() {
 
     const [post, setPost] = useLocalStorage('post', POST_TEMPLATE)
     const [newAuthor, setNewAuthor] = useLocalStorage('n-a', '')
-    const [newCategory, setNewCategory] = useLocalStorage('n-c', '')
     
     const [image, setImage] = useState(null)
     const [status, setStatus] = useState('')
@@ -106,6 +108,7 @@ export default function AddPostPage() {
     const handleInputForArray = (e, field, idx) => {
         setPost(prevPost => {
             const newArray = prevPost[field].map((item, index) => index === idx ? e.target.value : item)
+            console.log(prevPost)
             return {...prevPost, [field]: newArray}
         })
     }
@@ -130,7 +133,6 @@ export default function AddPostPage() {
     const handleClear = () => {
         setPost(POST_TEMPLATE)
         setNewAuthor('')
-        setNewCategory('')
         setImage(null)
     }
 
@@ -236,12 +238,24 @@ export default function AddPostPage() {
                     <TextField className={classes.input_long} label="Date" type="date" value={new Date(post.date || 0).toISOString().substr(0,10)} onChange={e => handleInput(e, 'date')} />
                 </div>)}
 
-                {exists(post.categories) && (<div>{post.categories.map((cat, idx) => (
+                {exists(post.categories) && (
+                    <div className={classes.input_long}>
+                        <InputLabel style={{fontSize: '0.8rem'}}>Category</InputLabel>
+                        <Select value={post.categories[0] || ''} onChange={e => {setPost(prevPost => {return {...prevPost, categories: [e.target.value]}} )}}>
+                            <MenuItem value="Criminal Law">Criminal Law</MenuItem>
+                            <MenuItem value="International Law">International Law</MenuItem>
+                            <MenuItem value="Private Law">Private Law</MenuItem>
+                            <MenuItem value="Public Law">Public Law</MenuItem>
+                        </Select>
+                    </div>
+                )}
+
+                {/* {exists(post.categories) && (<div>{post.categories.map((cat, idx) => (
                     <span key={idx} ><TextField className={classes.input} label="Category" value={cat} onChange={e => handleInputForArray(e, 'categories', idx)} /><CancelOutlinedIcon style={{color: 'darkred'}} className={classes.icon} onClick={() => handleRemoveFromArray(idx, 'categories')} /></span>
                 ))}
                     <TextField className={classes.input} label="New Category" value={newCategory} onChange={e => setNewCategory(e.target.value)} />
                     <AddIcon style={{color: 'green'}} className={classes.icon}  onClick={() => {handleAdd(newCategory, 'categories'); setNewCategory('')}} />
-                </div>)}
+                </div>)} */}
 
                 {exists(post.authors) && (<div>{post.authors.map((author, idx) => (
                     <span key={idx} ><TextField className={classes.input} label="Author" value={author} onChange={e => handleInputForArray(e, 'authors', idx)} /><CancelOutlinedIcon style={{color: 'darkred'}} className={classes.icon} onClick={() => handleRemoveFromArray(idx, 'authors')} /></span>
