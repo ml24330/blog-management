@@ -84,11 +84,11 @@ export default function HomePage() {
                     <Card className={classes.card}>
                         <CardContent>
                             <Typography variant="h5" component="h2">
-                                Blog Converter
+                                Article Converter
                             </Typography>
                             <br />
                             <Typography variant="body2" component="p">
-                                Click here to insert footnotes and references to an article.
+                                Click here to pair up references in a blog article.
                             </Typography>
                         </CardContent>
                     </Card>
