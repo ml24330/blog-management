@@ -64,7 +64,7 @@ export default function Converter() {
         if (hasConverted) { return }
 
         let regex = format === "simple" ? footnoteRegexSimple : footnoteRegexFtn
-        footnote.current.value = footnote.current.value.replace(regex, "<a class=\"reference\" id=\"$1\" href=\"#inline$1\">[$1]</a>\n$2")
+        footnote.current.value = footnote.current.value.replace(regex, "<a class=\"reference\" id=\"$1\" href=\"#inline$1\">[$1]</a>$2")
     }
 
     function lockArticle() {
@@ -78,7 +78,7 @@ export default function Converter() {
     async function copyArticleToClipboard() {
         let bodyTextbox = body.current
         let footnoteTextbox = footnote.current
-        let text = bodyTextbox.value + footnoteTextbox.value
+        let text = bodyTextbox.value + '\n\n ***** \n\n' + footnoteTextbox.value
 
         console.log(await navigator.clipboard.writeText(text))
         alert("Article converted and copied to clipboard successfully.")
