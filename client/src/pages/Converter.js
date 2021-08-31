@@ -92,7 +92,7 @@ export default function Converter() {
     async function copyArticleToClipboard() {
         let bodyTextbox = body.current
         let footnoteTextbox = footnote.current
-        let text = bodyTextbox.value + '\n\n ***** \n\n' + footnoteTextbox.value
+        let text = bodyTextbox.value + '\n\n*****\n\n' + footnoteTextbox.value
 
         console.log(await navigator.clipboard.writeText(text))
         alert("Article converted and copied to clipboard successfully.")

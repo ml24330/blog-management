@@ -161,7 +161,7 @@ export default function PostPage({ match, history }) {
             pastebin.current.innerHTML = ''
             const turndownService = new TurndownService()
             const md = turndownService.turndown(html)
-            const output = `${post.content.substring(0, startpos)}${md}${post.content.substring(endpos)}`
+            const output = `${post.content.substring(0, startpos)}${md}${post.content.substring(endpos)}`.replace(/\\/g, '')
             content.current.focus()
             setPost(prevPost => {
                 return {...prevPost, content: output }
