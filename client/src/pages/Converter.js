@@ -36,9 +36,9 @@ const useStyles = makeStyles({
     }
 })
 
-const bodyRegexSimple = new RegExp(/\[([^\[]+)\]/g)
+const bodyRegexSimple = new RegExp(/\\*\[(\d+)\\*\]/g)
 
-const footnoteRegexSimple = new RegExp(/\[([^\[]+)\]/g)
+const footnoteRegexSimple = new RegExp(/\\*\[(\d+)\\*\]/g)
 
 export default function Converter() {
 
@@ -51,6 +51,9 @@ export default function Converter() {
     const pastebin = useRef(null)
 
     const handlePaste = (ref) => {
+        if(hasConverted) {
+            return
+        }
         const startpos = ref.current.selectionStart
         const endpos = ref.current.selectionEnd
         pastebin.current.focus()
