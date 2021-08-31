@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import useLocalStorage from '../useLocalStorage'
 import PreviewComponent from '../components/PreviewComponent'
@@ -10,11 +10,9 @@ import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined'
 import Typography from '@material-ui/core/Typography'
 import AddIcon from '@material-ui/icons/Add'
 import Warning from '../components/Warning'
-import InputLabel from '@material-ui/core/InputLabel'
-import MenuItem from '@material-ui/core/MenuItem'
-import Select from '@material-ui/core/Select'
 import { API_URL } from '../config'
 import placeholder from '../assets/images/placeholder.jpeg' 
+import TurndownService from 'turndown'
 
 const useStyles = makeStyles({
     page: {
@@ -78,7 +76,9 @@ export default function PostPage({ match, history }) {
     const [post, setPost] = useLocalStorage(`post_${match.params.id}`, {})
     const [modified, setModified] = useLocalStorage(`modified_${match.params.id}`, false)
     const [newAuthor, setNewAuthor] = useLocalStorage(`n-a_${match.params.id}`, '')
+    const [newCategory, setNewCategory] = useLocalStorage(`n-c_${match.params.id}`, '')
     const [image, setImage] = useState(placeholder)
+    const [caption, setCaption] = useState('')
     const [hasImage, setHasImage] = useState(false)
     
     const [status, setStatus] = useState('')
@@ -86,6 +86,9 @@ export default function PostPage({ match, history }) {
     const [loggedIn, setLoggedIn] = useState(true)
 
     const classes = useStyles()
+
+    const pastebin = useRef(null)
+    const content = useRef(null)
 
     useEffect(() => {
         if(!modified) {
@@ -125,7 +128,8 @@ export default function PostPage({ match, history }) {
             if(res.status !== 200) {
                 setImage(placeholder)
             } else {
-                const { image } = await res.json()
+                const { image, caption } = await res.json()
+                setCaption(caption)
                 if(image) {
                     setHasImage(true)
                     setImage(`data:image/png;base64,${new Buffer.from(image.data).toString('base64')}`)
@@ -134,7 +138,7 @@ export default function PostPage({ match, history }) {
                 }
             }
         })()
-    }, [post.slug])
+    }, [post.slug, modified])
 
     const cleanUp = () => {
             localStorage.removeItem(`post_${match.params.id}`)
@@ -145,6 +149,25 @@ export default function PostPage({ match, history }) {
 
     const exists = (v) => {
         return v !== undefined
+    }
+
+    const handlePaste = (e) => {
+        setModified(true)
+        const startpos = content.current.selectionStart
+        const endpos = content.current.selectionEnd
+        pastebin.current.focus()
+        setTimeout(() => {
+            const html = pastebin.current.innerHTML
+            pastebin.current.innerHTML = ''
+            const turndownService = new TurndownService()
+            const md = turndownService.turndown(html)
+            const output = `${post.content.substring(0, startpos)}${md}${post.content.substring(endpos)}`
+            content.current.focus()
+            setPost(prevPost => {
+                return {...prevPost, content: output }
+            })
+            content.current.selectionEnd = endpos + md.length
+        }, 0)
     }
 
     const handleInput = (e, field) => {
@@ -235,6 +258,7 @@ export default function PostPage({ match, history }) {
         if(typeof image == 'object' && image !== null) {
             const f = new FormData()
             f.append('image', image)
+            f.append('caption', caption)
             const img_res = await fetch(`${API_URL}/images/${post.slug}`, {
                 credentials: 'include',
                 method: 'PATCH',
@@ -248,6 +272,14 @@ export default function PostPage({ match, history }) {
             await fetch(`${API_URL}/images/${post.slug}`, {
                 credentials: 'include',
                 method: 'DELETE'
+            })
+        } else {
+            const f = new FormData()
+            f.append('caption', caption)
+            await fetch(`${API_URL}/images/${post.slug}`, {
+                credentials: 'include',
+                method: 'PATCH',
+                body: f
             })
         }
         setStatus(<>Post successfully saved. <span className={classes.link} onClick={() => {setModified(false);window.location.reload()}}>Refresh</span> the page to see.</>)
@@ -302,24 +334,12 @@ export default function PostPage({ match, history }) {
                     <TextField className={classes.input_long} label="Date" type="date" value={new Date(post.date || 0).toISOString().substr(0,10)} onChange={e => handleInput(e, 'date')} />
                 </div>)}
 
-                {exists(post.categories) && (
-                    <div className={classes.input_long}>
-                        <InputLabel style={{fontSize: '0.8rem'}}>Category</InputLabel>
-                        <Select value={post.categories[0] || ''} onChange={e => {setPost(prevPost => {return {...prevPost, categories: [e.target.value]}} )}}>
-                            <MenuItem value="Criminal Law">Criminal Law</MenuItem>
-                            <MenuItem value="International Law">International Law</MenuItem>
-                            <MenuItem value="Private Law">Private Law</MenuItem>
-                            <MenuItem value="Public Law">Public Law</MenuItem>
-                        </Select>
-                    </div>
-                )}
-
-                {/* {exists(post.categories) && (<div>{post.categories.map((cat, idx) => (
+                {exists(post.categories) && (<div>{post.categories.map((cat, idx) => (
                     <span key={idx} ><TextField className={classes.input} label="Category" value={cat} onChange={e => handleInputForArray(e, 'categories', idx)} /><CancelOutlinedIcon style={{color: 'darkred'}} className={classes.icon} onClick={() => handleRemoveFromArray(idx, 'categories')} /></span>
                 ))}
                     <TextField className={classes.input} label="New Category" value={newCategory} onChange={e => setNewCategory(e.target.value)} />
                     <AddIcon style={{color: 'green'}} className={classes.icon}  onClick={() => {handleAdd(newCategory, 'categories'); setNewCategory('')}} />
-                </div>)} */}
+                </div>)}
 
                 {exists(post.authors) && (<div>{post.authors.map((author, idx) => (
                     <span key={idx} ><TextField className={classes.input} label="Author" value={author} onChange={e => handleInputForArray(e, 'authors', idx)} /><CancelOutlinedIcon style={{color: 'darkred'}} className={classes.icon} onClick={() => handleRemoveFromArray(idx, 'authors')} /></span>
@@ -339,12 +359,15 @@ export default function PostPage({ match, history }) {
                     }
                     <div>
                         <input className={classes.input_long} type="file" accept=".png,.jpg,.jpeg,.gif,.webp,.heif" onChange={e => {setModified(true); setHasImage(true); setImage(e.target.files[0])}} />
-                        {hasImage && <span className={classes.remove} onClick={handleRemoveImage} >Remove image</span>}
+                        {hasImage && <>
+                            <span className={classes.remove} onClick={handleRemoveImage} >Remove image</span>
+                            <TextField className={classes.input_long} label="Caption" value={caption || ''} onChange={e => setCaption(e.target.value)} />
+                        </>}
                     </div>
                 </div>)}
 
                 {exists(post.content) && (<div>
-                    <TextField className={classes.textarea} multiline={true} label="Content" value={post.content || ''} onChange={e => handleInput(e, 'content')} />
+                    <TextField inputRef={content} onPaste={handlePaste} className={classes.textarea} multiline={true} label="Content" value={post.content || ''} onChange={e => handleInput(e, 'content')} />
                 </div>)}
 
                 <Button className={classes.button} variant="contained" color="primary" onClick={handleSubmit}>Save</Button>
@@ -355,6 +378,8 @@ export default function PostPage({ match, history }) {
                 <Typography>
                     {status}
                 </Typography>
+
+                <div contentEditable={true} ref={pastebin} style={{opacity: 0, position: 'fixed', top: 0}}></div>
             </div>
         </>
     )

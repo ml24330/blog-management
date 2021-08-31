@@ -502,7 +502,8 @@ imagesRouter.post('/:slug', upload.single('image'), async(req, res) => {
             }
             const img = new Image({
                 image,
-                slug: req.params.slug
+                slug: req.params.slug,
+                caption: req.body.caption
             })
             await img.save()
             fs.unlinkSync(path.join(__dirname + '/uploads/' + req.file.filename))
@@ -527,7 +528,7 @@ imagesRouter.patch('/:slug', upload.single('image'), async (req, res) => {
                 contentType: 'image/png'
             }
             let img
-            img = await Image.findOneAndUpdate({slug: req.params.slug}, {image}, {new: true})
+            img = await Image.findOneAndUpdate({slug: req.params.slug}, {image, caption: req.body.caption}, {new: true})
             if(!img) {
                 img = new Image({image, slug: req.params.slug})
                 await img.save()
@@ -535,7 +536,8 @@ imagesRouter.patch('/:slug', upload.single('image'), async (req, res) => {
             fs.unlinkSync(path.join(__dirname + '/uploads/' + req.file.filename))
             return res.json(img)
         } else {
-            throw new Error('No images found!')
+            const img = await Image.findOneAndUpdate({slug: req.params.slug}, {caption: req.body.caption}, {new: true})
+            return res.json(img)
         }
     } catch(e) {
         if(req.file) {

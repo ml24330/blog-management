@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import useLocalStorage from '../useLocalStorage'
 import PreviewComponent from '../components/PreviewComponent'
@@ -10,11 +10,9 @@ import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined'
 import Typography from '@material-ui/core/Typography'
 import AddIcon from '@material-ui/icons/Add'
 import Warning from '../components/Warning'
-import InputLabel from '@material-ui/core/InputLabel'
-import MenuItem from '@material-ui/core/MenuItem'
-import Select from '@material-ui/core/Select'
 import { API_URL } from '../config'
 import placeholder from '../assets/images/placeholder.jpeg'
+import TurndownService from 'turndown'
 
 const POST_TEMPLATE = {
     title: '',
@@ -87,16 +85,39 @@ export default function AddPostPage() {
 
     const [post, setPost] = useLocalStorage('post', POST_TEMPLATE)
     const [newAuthor, setNewAuthor] = useLocalStorage('n-a', '')
+    const [newCategory, setNewCategory] = useLocalStorage('n-c', '')
     
     const [image, setImage] = useState(null)
+    const [caption, setCaption] = useState('')
     const [status, setStatus] = useState('')
     const [isOpen, setIsOpen] = useState(false)
     const [loggedIn, setLoggedIn] = useState(true)
 
     const classes = useStyles()
 
+    const pastebin = useRef(null)
+    const content = useRef(null)
+
     const exists = (v) => {
         return v !== undefined
+    }
+
+    const handlePaste = (e) => {
+        const startpos = content.current.selectionStart
+        const endpos = content.current.selectionEnd
+        pastebin.current.focus()
+        setTimeout(() => {
+            const html = pastebin.current.innerHTML
+            pastebin.current.innerHTML = ''
+            const turndownService = new TurndownService()
+            const md = turndownService.turndown(html)
+            const output = `${post.content.substring(0, startpos)}${md}${post.content.substring(endpos)}`
+            content.current.focus()
+            setPost(prevPost => {
+                return {...prevPost, content: output }
+            })
+            content.current.selectionEnd = endpos + md.length
+        }, [])
     }
 
     const handleInput = (e, field) => {
@@ -172,6 +193,7 @@ export default function AddPostPage() {
         const data = await post_res.json()
         const f = new FormData()
         f.append('image', image)
+        f.append('caption', caption)
         await fetch(`${API_URL}/images/${data.slug}`, {
             credentials: 'include',
             method: 'POST',
@@ -238,24 +260,12 @@ export default function AddPostPage() {
                     <TextField className={classes.input_long} label="Date" type="date" value={new Date(post.date || 0).toISOString().substr(0,10)} onChange={e => handleInput(e, 'date')} />
                 </div>)}
 
-                {exists(post.categories) && (
-                    <div className={classes.input_long}>
-                        <InputLabel style={{fontSize: '0.8rem'}}>Category</InputLabel>
-                        <Select value={post.categories[0] || ''} onChange={e => {setPost(prevPost => {return {...prevPost, categories: [e.target.value]}} )}}>
-                            <MenuItem value="Criminal Law">Criminal Law</MenuItem>
-                            <MenuItem value="International Law">International Law</MenuItem>
-                            <MenuItem value="Private Law">Private Law</MenuItem>
-                            <MenuItem value="Public Law">Public Law</MenuItem>
-                        </Select>
-                    </div>
-                )}
-
-                {/* {exists(post.categories) && (<div>{post.categories.map((cat, idx) => (
+                {exists(post.categories) && (<div>{post.categories.map((cat, idx) => (
                     <span key={idx} ><TextField className={classes.input} label="Category" value={cat} onChange={e => handleInputForArray(e, 'categories', idx)} /><CancelOutlinedIcon style={{color: 'darkred'}} className={classes.icon} onClick={() => handleRemoveFromArray(idx, 'categories')} /></span>
                 ))}
                     <TextField className={classes.input} label="New Category" value={newCategory} onChange={e => setNewCategory(e.target.value)} />
                     <AddIcon style={{color: 'green'}} className={classes.icon}  onClick={() => {handleAdd(newCategory, 'categories'); setNewCategory('')}} />
-                </div>)} */}
+                </div>)}
 
                 {exists(post.authors) && (<div>{post.authors.map((author, idx) => (
                     <span key={idx} ><TextField className={classes.input} label="Author" value={author} onChange={e => handleInputForArray(e, 'authors', idx)} /><CancelOutlinedIcon style={{color: 'darkred'}} className={classes.icon} onClick={() => handleRemoveFromArray(idx, 'authors')} /></span>
@@ -275,12 +285,15 @@ export default function AddPostPage() {
                     }
                     <div>
                         <input className={classes.input_long} type="file" accept=".png,.jpg,.jpeg,.gif,.webp,.heif" onChange={e => setImage(e.target.files[0])} />
-                        {image !== null && <span className={classes.remove} onClick={() => setImage(null)}>Remove image</span>}
+                        {image !== null && <>
+                            <span className={classes.remove} onClick={() => setImage(null)} >Remove image</span>
+                            <TextField className={classes.input_long} label="Caption" value={caption || ''} onChange={e => setCaption(e.target.value)} />
+                        </>}
                     </div>
                 </div>)}
 
                 {exists(post.content) && (<div>
-                    <TextField className={classes.textarea} multiline={true} label="Content" value={post.content || ''} onChange={e => handleInput(e, 'content')} />
+                    <TextField inputRef={content} onPaste={handlePaste} className={classes.textarea} multiline={true} label="Content" value={post.content || ''} onChange={e => handleInput(e, 'content')} />
                 </div>)}
 
                 <Button className={classes.button} variant="contained" color="primary" onClick={handleSubmit}>Save</Button>
@@ -290,6 +303,8 @@ export default function AddPostPage() {
                 <Typography>
                     {status}
                 </Typography>
+
+                <div contentEditable={true} ref={pastebin} style={{opacity: 0, position: 'fixed'}}></div>
             </div>
         </>
     )

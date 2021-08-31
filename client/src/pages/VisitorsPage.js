@@ -53,7 +53,7 @@ export default function VisitorsPage({ history }) {
             const merged = dat.map(v => {
                 return {...v, id: v._id, entry: v.entry || 'N/A'}
             })
-            setVisitors(merged)
+            setVisitors(merged.reverse())
             const locmap = {}
             dat.forEach(v => {
                 locmap[v.location] = locmap[v.location] ? ++locmap[v.location] : 1

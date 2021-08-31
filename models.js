@@ -36,7 +36,8 @@ const Image = mongoose.model('Image', new mongoose.Schema({
     image: {
         data: Buffer,
         contentType: String
-    }
+    },
+    caption: String
 }))
 
 export {Post, Author, Visit, Visitor, Image}
