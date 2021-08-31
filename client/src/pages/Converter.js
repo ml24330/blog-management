@@ -36,9 +36,9 @@ const useStyles = makeStyles({
     }
 })
 
-const bodyRegexSimple = new RegExp(/\\*\[?\\*\[(\d+)\\*\]\\*\]?(\(.*\))*/g)
+const bodyRegexSimple = new RegExp(/\\*\[?\\*\[(\d+)\\*\]\\*\]?(\(.*?\))*/g)
 
-const footnoteRegexSimple = new RegExp(/\\*\[?\\*\[(\d+)\\*\]\\*\]?(\(.*\))*/g)
+const footnoteRegexSimple = new RegExp(/\\*\[?\\*\[(\d+)\\*\]\\*\]?(\(.*?\))/g)
 
 export default function Converter() {
 
