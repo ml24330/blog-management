@@ -4,6 +4,7 @@ import { red } from '@material-ui/core/colors'
 import Navigation from '../components/Navigation'
 import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
+import TurndownService from 'turndown'
 
 const useStyles = makeStyles({
     page: {
@@ -47,6 +48,23 @@ export default function Converter() {
 
     const body = useRef(null)
     const footnote = useRef(null)
+    const pastebin = useRef(null)
+
+    const handlePaste = (ref) => {
+        const startpos = ref.current.selectionStart
+        const endpos = ref.current.selectionEnd
+        pastebin.current.focus()
+        setTimeout(() => {
+            const html = pastebin.current.innerHTML
+            pastebin.current.innerHTML = ''
+            const turndownService = new TurndownService()
+            const md = turndownService.turndown(html)
+            const output = `${ref.current.value.substring(0, startpos)}${md}${ref.current.value.substring(endpos)}`
+            ref.current.focus()
+            ref.current.value = output
+            ref.current.selectionEnd = endpos + md.length
+        }, [])
+    }
 
     function convertArticleBody() {
         if (hasConverted) { return }
@@ -113,13 +131,13 @@ export default function Converter() {
                 <Typography variant="h4">LSE Law Review Article Converter</Typography>
                     <div className={classes.flex}>
                         <label for="bodytextbox" className={classes.label}>Main Article Body:</label>
-                        <textarea className={classes.textarea} id="bodytextbox" ref={body} placeholder="Type or paste the main article body here, then click the buttons below to convert the footnote format."></textarea>
+                        <textarea className={classes.textarea} id="bodytextbox" onPaste={() => handlePaste(body)} ref={body} placeholder="Type or paste the main article body here, then click the buttons below to convert the footnote format."></textarea>
                     </div>
                     <br />
 
                     <div className={classes.flex} style={{height: '25%'}}>
                         <label for="footnotestextbox" className={classes.label}>Footnotes:</label>
-                        <textarea className={classes.textarea} id="footnotestextbox" ref={footnote} placeholder="Type or paste the article footnotes section here, then click the buttons below to convert the footnote format."></textarea>
+                        <textarea className={classes.textarea} id="footnotestextbox" ref={footnote} onPaste={() => handlePaste(footnote)} placeholder="Type or paste the article footnotes section here, then click the buttons below to convert the footnote format."></textarea>
                     </div>
 
                     <div className={classes.button} style={{height: '10%'}}>
@@ -129,6 +147,8 @@ export default function Converter() {
                         <Button variant="contained" color="secondary" onClick={resetButtonClicked} className={classes.button} style={{float: 'right'}}>Reset</Button>
                     </div>
             </div>
+
+            <div contentEditable={true} ref={pastebin} style={{opacity: 0, position: 'fixed'}}></div>
         </>
     )
 }
