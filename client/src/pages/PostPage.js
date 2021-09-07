@@ -220,11 +220,11 @@ export default function PostPage({ match, history }) {
         setStatus('Saving...')
         const formData = new FormData()
         formData.append('title', post.title)
-        formData.append('categories', post.categories)
+        formData.append('categories', JSON.stringify(post.categories))
         formData.append('date', post.date)
         formData.append('content', post.content)
         if(post.authors.length > 1) {
-            formData.append('authors', post.authors)
+            formData.append('authors', JSON.stringify(post.authors))
         } else {
             formData.append('author', post.authors[0])
         }

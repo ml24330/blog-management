@@ -64,8 +64,8 @@ postsRouter.post('/', upload.single('image'), async (req, res) => {
                 slug,
                 title,
                 author,
-                authors,
-                categories,
+                authors: authors ? JSON.parse(authors) : [],
+                categories: JSON.parse(categories),
                 content,
                 date,
                 image
@@ -75,8 +75,8 @@ postsRouter.post('/', upload.single('image'), async (req, res) => {
                 slug,
                 title,
                 author,
-                authors,
-                categories,
+                authors: authors ? JSON.parse(authors) : [],
+                categories: JSON.parse(categories),
                 content,
                 date
             })
@@ -158,8 +158,8 @@ postsRouter.patch('/:id', upload.single('image'), async (req, res) => {
             post = {
                 title,
                 author,
-                authors: authors || [],
-                categories,
+                authors: authors ? JSON.parse(authors) : [],
+                categories: JSON.parse(categories),
                 content,
                 date,
                 image
@@ -168,8 +168,8 @@ postsRouter.patch('/:id', upload.single('image'), async (req, res) => {
             post = {
                 title,
                 author,
-                authors: authors || [],
-                categories,
+                authors: authors ? JSON.parse(authors) : [],
+                categories: JSON.parse(categories),
                 content,
                 date
             }
