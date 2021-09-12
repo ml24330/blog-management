@@ -26,7 +26,7 @@ const useStyles = makeStyles({
         right: '20px'
     },
     image: {
-        width: '80%',
+        width: '60%',
         margin: '15px'
     }
 })
@@ -63,7 +63,7 @@ export default function PreviewComponent({ setIsOpen, isOpen, post, image }) {
                             {idx+1 !== post.categories.length && <span> & </span>}
                         </span>
                         ))}</span>
-                        <div className="post-title">{post.title}</div>
+                        <div className="post-title"><ReactMarkdown rehypePlugins={[rehypeRaw]}>{post.title}</ReactMarkdown></div>
                         <div className="post-meta">
                             <span className="post-date">{renderDate(post.date)}</span>
                             <span className="post-time"><img src={time} alt="time" />{Math.ceil(readingTime(removeMd(post.content).split('[1]')[0], { wordsPerMinute: 250 }).minutes)} min read</span>
