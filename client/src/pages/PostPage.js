@@ -316,7 +316,7 @@ export default function PostPage({ match, history }) {
         <>
             <Navigation name={post.title} />
             
-            <PreviewComponent setIsOpen={setIsOpen} isOpen={isOpen} post={post} image={hasImage && image} />
+            <PreviewComponent setIsOpen={setIsOpen} isOpen={isOpen} post={post} image={hasImage && image} caption={hasImage && caption}/>
 
             <div className={classes.page} >
                 {!loggedIn && <Warning />}

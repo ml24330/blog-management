@@ -27,11 +27,17 @@ const useStyles = makeStyles({
     },
     image: {
         width: '60%',
-        margin: '15px'
+        marginTop: '15px'
+    },
+    caption: {
+        marginRight: '20%',
+        textAlign: 'right',
+        color: 'grey',
+        fontSize: '1rem'
     }
 })
 
-export default function PreviewComponent({ setIsOpen, isOpen, post, image }) {
+export default function PreviewComponent({ setIsOpen, isOpen, post, image, caption }) {
 
     const classes = useStyles()
 
@@ -68,7 +74,10 @@ export default function PreviewComponent({ setIsOpen, isOpen, post, image }) {
                             <span className="post-date">{renderDate(post.date)}</span>
                             <span className="post-time"><img src={time} alt="time" />{Math.ceil(readingTime(removeMd(post.content).split('[1]')[0], { wordsPerMinute: 250 }).minutes)} min read</span>
                         </div>
-                        {image && <img className={classes.image} src={image} onError={(e)=>{e.target.onerror = null; e.target.src= URL.createObjectURL(image)}} alt="avatar" />}
+                        {image && <>
+                            <img className={classes.image} src={image} onError={(e)=>{e.target.onerror = null; e.target.src= URL.createObjectURL(image)}} alt="avatar" />
+                            <div className={classes.caption}>{caption || ''}</div>
+                        </>}
                         <div className="page-content">
                             <ReactMarkdown rehypePlugins={[rehypeRaw]}>{post.content}</ReactMarkdown>
                         </div>

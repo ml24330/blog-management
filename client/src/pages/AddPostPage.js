@@ -242,7 +242,7 @@ export default function AddPostPage() {
         <>
             <Navigation name={'New Post'} />
 
-            <PreviewComponent setIsOpen={setIsOpen} isOpen={isOpen} post={post} image={image && image}/>
+            <PreviewComponent setIsOpen={setIsOpen} isOpen={isOpen} post={post} image={image && image} caption={image && caption}/>
             
             <div className={classes.page} >
                 {!loggedIn && <Warning />}
