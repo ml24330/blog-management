@@ -24,7 +24,7 @@ export default function AuthorsPage() {
             const withId = dat.map(author => {
                 const id = author._id
                 const url = `${WEBSITE_URL}/author/${author.name}`
-                const _image = author.image ? author.image.data ? 'Yes' : 'No' : 'No'
+                const _image = author.image ? 'Yes' : 'No'
                 return {...author, id, url, _image}
             })
             setAuthors(withId)

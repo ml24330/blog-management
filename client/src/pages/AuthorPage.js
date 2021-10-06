@@ -51,11 +51,10 @@ const useStyles = makeStyles({
 export default function AuthorPage({ match, history }) {
 
     const [author, setAuthor] = useLocalStorage(`author_${match.params.id}`, {})
-    const [image, setImage] = useState({})
+    const [image, setImage] = useState()
     const [modified, setModified] = useLocalStorage(`modified_${match.params.id}`, false)
     const [status, setStatus] = useState('')
     const [loggedIn, setLoggedIn] = useState(true)
-    const [hasImage, setHasImage] = useState(false)
 
     const classes = useStyles()
 
@@ -73,21 +72,15 @@ export default function AuthorPage({ match, history }) {
                     history.push('/404')
                 }
                 const dat = await res.json()
+                if(dat.image) {
+                    setImage(dat.image)
+                } else {
+                    setImage(null)
+                }
                 setAuthor(dat)
             })()
         }
     }, [modified])
-
-    useEffect(() => {
-        try {
-            const img = new Buffer.from(author.image.data).toString('base64')
-            setImage(`data:image/png;base64,${img}`)
-            setHasImage(true)
-        } catch {
-            setImage(placeholder)
-            setHasImage(false)
-        }
-    }, [author.image])
 
     const cleanUp = () => {
         localStorage.removeItem(`author_${match.params.id}`)
@@ -162,7 +155,7 @@ export default function AuthorPage({ match, history }) {
     }
 
     const handleRemoveImage = () => {
-        setHasImage(false)
+        setModified(true)
         setImage(null)
     }
 
@@ -194,16 +187,16 @@ export default function AuthorPage({ match, history }) {
                     </Select>
                 </div>)}
 
-                {exists(image) && (<div>
-                    {image === null ? 
+                <div>
+                    {!image ? 
                         (<img className={classes.image} src={placeholder} alt="placeholder" />) :
                         (<img className={classes.image} src={image} onError={(e)=>{e.target.onerror = null; e.target.src= URL.createObjectURL(image)}} alt="avatar" />)
                     }
                     <div>
-                        <input className={classes.input_long} type="file" accept=".png,.jpg,.jpeg,.gif,.webp,.heif" onChange={e => {setModified(true); setHasImage(true); setImage(e.target.files[0])}} />
-                        {hasImage && <span className={classes.remove} onClick={handleRemoveImage} >Remove image</span>}
+                        <input className={classes.input_long} type="file" accept=".png,.jpg,.jpeg,.gif,.webp,.heif" onChange={e => {setModified(true); setImage(e.target.files[0])}} />
+                        {image && <span className={classes.remove} onClick={handleRemoveImage} >Remove image</span>}
                     </div>
-                </div>)}
+                </div>
 
                 <Button className={classes.button} variant="contained" color="primary" onClick={handleSubmit}>Save</Button>
                 <Button className={classes.button} variant="contained" color="secondary" onClick={handleDelete}>Delete</Button>

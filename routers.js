@@ -264,15 +264,12 @@ authorsRouter.post('/', upload.single('image'), async (req, res) => {
         }
         let author
         if(req.file) {
-            const image = {
-                data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
-                contentType: 'image/png'
-            }
+            const result = await uploadToCloudinary(path.join(__dirname + '/uploads/' + req.file.filename), { public_id: name.replace(' ', '-'), overwrite: true })
             author = new Author({
                 name,
                 bio,
                 category,
-                image
+                image: result.url
             })
         } else {
             author = new Author({
@@ -344,24 +341,19 @@ authorsRouter.patch('/:id', upload.single('image'), async (req, res) => {
         }
         let author
         if(req.file) {
-            const image = {
-                data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
-                contentType: 'image/png'
-            }
+            const result = await uploadToCloudinary(path.join(__dirname + '/uploads/' + req.file.filename), { public_id: name.replace(' ', '-'), overwrite: true })
             author = {
                 name,
                 bio,
                 category,
-                image
+                image: result.url
             }
         } else if(req.body.image === 'null') {
             author = {
                 name,
                 bio,
                 category,
-                image: {
-                    contentType: 'image/png'
-                }
+                image: ''
             }
         } else {
             author = {
