@@ -125,20 +125,22 @@ export default function PostPage({ match, history }) {
             const res = await fetch(`${API_URL}/images/${post.slug}`, {
                 credentials: 'include'
             })
+            console.log(res)
             if(res.status !== 200) {
                 setImage(placeholder)
             } else {
-                const { image, caption } = await res.json()
+                const { url, caption } = await res.json()
+                console.log(url, caption)
                 setCaption(caption)
                 if(image) {
                     setHasImage(true)
-                    setImage(`data:image/png;base64,${new Buffer.from(image.data).toString('base64')}`)
+                    setImage(url)
                 } else {
                     setImage(placeholder)
                 }
             }
         })()
-    }, [post.slug, modified])
+    }, [post.slug])
 
     const cleanUp = () => {
             localStorage.removeItem(`post_${match.params.id}`)

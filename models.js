@@ -33,10 +33,7 @@ const Visitor = mongoose.model('Visitor', new mongoose.Schema({
 
 const Image = mongoose.model('Image', new mongoose.Schema({
     slug: String,
-    image: {
-        data: Buffer,
-        contentType: String
-    },
+    url: String,
     caption: String
 }))
 

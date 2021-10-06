@@ -5,6 +5,7 @@ import multer from 'multer'
 import fs from 'fs'
 import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
+import { v2 as cloudinary } from 'cloudinary'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -12,6 +13,22 @@ const __dirname = dirname(__filename)
 import { Post, Author, Visit, Visitor, Image } from './models.js'
 
 dotenv.config()
+
+cloudinary.config({ 
+    cloud_name: 'dv6qbaj7u', 
+    api_key: '518752834171344', 
+    api_secret: 'ZnYJwaWq2y2wFU32dEZcRS0mZeI',
+    secure: true
+})
+
+function uploadToCloudinary(image, options) {
+    return new Promise((resolve, reject) => {
+      cloudinary.uploader.upload(image, options, (err, url) => {
+        if (err) return reject(err);
+        return resolve(url);
+      })
+    });
+  }
 
 const postsRouter = express.Router()
 const postRouter = express.Router()
@@ -98,7 +115,7 @@ postsRouter.post('/', upload.single('image'), async (req, res) => {
 // READ all posts
 postsRouter.get('/', async (req, res) => {
     try {
-        const posts = await Post.find()
+        const posts = await Post.find({})
         return res.json(posts)
     } catch(e) {
         console.log(`Error while indexing posts: ${e}`)
@@ -496,16 +513,12 @@ visitsRouter.delete('/:id', async (req, res) => {
 imagesRouter.post('/:slug', upload.single('image'), async(req, res) => {
     try {
         if(req.file) {
-            const image = {
-                data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
-                contentType: 'image/png'
-            }
+            const result = await uploadToCloudinary(path.join(__dirname + '/uploads/' + req.file.filename), { public_id: req.params.slug, overwrite: true })
             const img = new Image({
-                image,
+                url: result.url,
                 slug: req.params.slug,
                 caption: req.body.caption
             })
-            await img.save()
             fs.unlinkSync(path.join(__dirname + '/uploads/' + req.file.filename))
             return res.json(img)
         } else {
@@ -515,7 +528,7 @@ imagesRouter.post('/:slug', upload.single('image'), async(req, res) => {
         if(req.file) {
             fs.unlinkSync(path.join(__dirname + '/uploads/' + req.file.filename))
         }
-        console.log(`Error while posting image: ${e}`)
+        console.log(`Error while posting image: ${e.message}`)
         return res.status(400).json('An error has occurred!')
     }
 })
@@ -523,14 +536,11 @@ imagesRouter.post('/:slug', upload.single('image'), async(req, res) => {
 imagesRouter.patch('/:slug', upload.single('image'), async (req, res) => {
     try {
         if(req.file) {
-            const image = {
-                data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
-                contentType: 'image/png'
-            }
+            const result = await uploadToCloudinary(path.join(__dirname + '/uploads/' + req.file.filename), { public_id: req.params.slug.replace(' ', '-'), overwrite: true })
             let img
-            img = await Image.findOneAndUpdate({slug: req.params.slug}, {image, caption: req.body.caption}, {new: true})
+            img = await Image.findOneAndUpdate({slug: req.params.slug}, {url: result.url, caption: req.body.caption}, {new: true})
             if(!img) {
-                img = new Image({image, slug: req.params.slug})
+                img = new Image({url: result.url , slug: req.params.slug, caption: req.body.caption})
                 await img.save()
             }
             fs.unlinkSync(path.join(__dirname + '/uploads/' + req.file.filename))
@@ -543,7 +553,7 @@ imagesRouter.patch('/:slug', upload.single('image'), async (req, res) => {
         if(req.file) {
             fs.unlinkSync(path.join(__dirname + '/uploads/' + req.file.filename))
         }
-        console.log(`Error while posting image: ${e}`)
+        console.log(`Error while posting image: ${e.message}`)
         return res.status(400).json('An error has occurred!')
     }
 })
