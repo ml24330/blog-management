@@ -115,7 +115,15 @@ postsRouter.post('/', upload.single('image'), async (req, res) => {
 // READ all posts
 postsRouter.get('/', async (req, res) => {
     try {
-        const posts = await Post.find({})
+        const posts = await Post.aggregate([{$project: {
+            title: 1,
+            slug: 1,
+            author: 1,
+            authors: 1,
+            date: 1,
+            categories: 1,
+            content: { $substrCP: ['$content', 0, 2000] }
+        }}])
         return res.json(posts)
     } catch(e) {
         console.log(`Error while indexing posts: ${e}`)
