@@ -1,5 +1,5 @@
 body {
-    font-family: serif;
+    font-family: Georgia;
     --theme: hsla(280, 50%, 50%, 1);
     overflow-wrap: break-word;
 }
