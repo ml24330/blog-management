@@ -300,7 +300,6 @@ a:hover {
 
 .page-content {
     margin: 20px 0;
-    text-align: justify;
 }
 
 /*
@@ -337,7 +336,7 @@ a:hover {
 
 .post-container .page-content {
     margin: 50px 0;
-    text-align: left;
+    text-align: justify;
 }
 
 .inline-reference {
