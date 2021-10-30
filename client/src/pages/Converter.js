@@ -38,7 +38,7 @@ const useStyles = makeStyles({
 
 const bodyRegexSimple = new RegExp(/\\*\[?\\*\[(\d+)\\*\]\\*\]?(\(.*?\))*/g)
 
-const footnoteRegexSimple = new RegExp(/\\*\[?\\*\[(\d+)\\*\]\\*\]?(\(.*?\))*/g)
+const footnoteRegexSimple = new RegExp(/\n\\*\[?\\*\[(\d+)\\*\]\\*\]?(\(.*?\))*/g)
 
 export default function Converter() {
 
@@ -78,7 +78,9 @@ export default function Converter() {
     function convertFootnotes() {
         if (hasConverted) { return }
 
+        footnote.current.value = `\n${footnote.current.value}`
         footnote.current.value = footnote.current.value.replace(footnoteRegexSimple, "\n<a class=\"reference\" id=\"$1\" href=\"#inline$1\">[$1]</a>")
+        footnote.current.value = footnote.current.value.substring(1)
     }
 
     function lockArticle() {
