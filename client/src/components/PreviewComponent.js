@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
+import remarkGfm from 'remark-gfm'
 import removeMd from 'remove-markdown'
 import readingTime from 'reading-time'
 import time from '../assets/images/time.svg'
@@ -79,7 +80,9 @@ export default function PreviewComponent({ setIsOpen, isOpen, post, image, capti
                             <div className={classes.caption}>{caption || ''}</div>
                         </>}
                         <div className="page-content">
-                            <ReactMarkdown rehypePlugins={[rehypeRaw]}>{post.content}</ReactMarkdown>
+                            <ReactMarkdown rehypePlugins={[rehypeRaw]} >
+                            {post.content}
+                            </ReactMarkdown>
                         </div>
                     </div>
                 </div>

@@ -432,7 +432,7 @@ visitsRouter.get('/', async (req, res) => {
 
 visitsRouter.get('/visitors', async (req, res) => {
     try {
-        if(req.query.pw !== process.env.DB_PASSWORD) throw new Error('Invalid password!')
+        if(req.query.pw !== process.env.VISITOR_PASSWORD) throw new Error('Invalid password!')
         const visitors = await Visitor.find({})
         return res.json(visitors)
     } catch(e) {
